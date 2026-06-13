@@ -1,0 +1,6 @@
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.c:85:6:P2PS_STM_App_Notification	32	static
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.c:284:6:P2PS_APP_Notification	16	static
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.c:318:6:P2PS_APP_Init	8	static
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.c:333:6:P2PS_APP_LED_BUTTON_context_Init	8	static
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.c:376:6:P2PS_APP_SW1_Button_Action	8	static
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.c:390:6:P2PS_Send_Notification	8	static
