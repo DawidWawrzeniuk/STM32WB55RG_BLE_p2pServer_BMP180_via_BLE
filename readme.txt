@@ -11,3 +11,41 @@ temperature & pressure handling
 OLED rendering
 
 BMP180 sensor integration on the client side
+
+
+
+
+
+📡 BLE Architecture Overview
+The server exposes a Peer-to-Peer (P2P) Service with two characteristics:
+
+1. Write Characteristic (Client → Server)
+UUID: P2P_WRITE_CHAR_UUID  
+Properties: WRITE_WITHOUT_RESP | READ  
+Max length: 6 bytes
+
+Payload format:
+
+Byte	Meaning
+0	Device ID
+1	Temperature (°C)
+2	Pressure LSB
+3	Pressure
+4	Pressure
+5	Pressure MSB
+
+
+
+Example decoding:
+````c
+uint8_t device_id = raw[0];
+uint8_t temp      = raw[1];
+
+uint32_t press =
+      ((uint32_t)raw[2] << 0)
+    | ((uint32_t)raw[3] << 8)
+    | ((uint32_t)raw[4] << 16)
+    | ((uint32_t)raw[5] << 24);
+
+pressure = press;
+````
