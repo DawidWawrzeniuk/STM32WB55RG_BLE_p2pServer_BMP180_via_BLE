@@ -53,9 +53,13 @@ pressure = press;
 
 
 **2. Notify Characteristic (Server → Client)**
+
 UUID: P2P_NOTIFY_CHAR_UUID  
+
 Properties: NOTIFY  
+
 Length: 2 bytes
+
 
 Used to send button/LED status back to the client.
 
