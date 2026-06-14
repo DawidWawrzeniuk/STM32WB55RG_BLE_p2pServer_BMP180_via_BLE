@@ -26,6 +26,8 @@ The server exposes a Peer-to-Peer (P2P) Service with two characteristics:
 
 **Payload format:**
 
+<div align="center">
+
 | Byte | Meaning           |
 |------|-------------------|
 | 0    | Device ID         |
@@ -34,6 +36,9 @@ The server exposes a Peer-to-Peer (P2P) Service with two characteristics:
 | 3    | Pressure          |
 | 4    | Pressure          |
 | 5    | Pressure MSB      |
+
+</div>
+
 
 
 
