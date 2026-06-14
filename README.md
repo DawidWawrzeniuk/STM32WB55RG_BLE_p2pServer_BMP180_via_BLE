@@ -19,12 +19,12 @@ BMP180 sensor integration on the client side
 # 📡 BLE Architecture Overview
 The server exposes a Peer-to-Peer (P2P) Service with two characteristics:
 
-1. Write Characteristic (Client → Server)
+**1. Write Characteristic (Client → Server)**
 UUID: P2P_WRITE_CHAR_UUID  
 Properties: WRITE_WITHOUT_RESP | READ  
 Max length: 6 bytes
 
-Payload format:
+**Payload format:**
 
 Byte	Meaning
 0	Device ID
@@ -36,7 +36,7 @@ Byte	Meaning
 
 
 
-Example decoding:
+**Example decoding:**
 ````c
 uint8_t device_id = raw[0];
 uint8_t temp      = raw[1];
@@ -52,7 +52,7 @@ pressure = press;
 
 
 
-2. Notify Characteristic (Server → Client)
+**2. Notify Characteristic (Server → Client)**
 UUID: P2P_NOTIFY_CHAR_UUID  
 Properties: NOTIFY  
 Length: 2 bytes
@@ -65,7 +65,7 @@ Incoming BLE writes are processed inside:
 ```c
 case P2PS_STM_WRITE_EVT:
 ```
-The server:
+**The server:**
 
 1.Logs raw bytes
 
@@ -79,7 +79,7 @@ The server:
 
 
 
-Example logging:
+**Example logging:**
 ````c
 APP_DBG_MSG("RAW (%d bytes): ", len);
 for(uint8_t i = 0; i < len; i++)
@@ -92,7 +92,7 @@ APP_DBG_MSG("\n");
 #📺 OLED Display Rendering
 The server displays the received values on an SSD1306 OLED using DMA‑driven I2C.
 
-Rendering loop (main.c):
+**Rendering loop (main.c):**
 
 ````c
 if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
