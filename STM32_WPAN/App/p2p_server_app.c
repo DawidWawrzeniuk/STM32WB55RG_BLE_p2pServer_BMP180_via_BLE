@@ -64,6 +64,8 @@ typedef struct
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+uint8_t temp=0;
+uint32_t pressure=0;
 /**
  * START of Section BLE_APP_CONTEXT
  */
@@ -120,20 +122,38 @@ void P2PS_STM_App_Notification(P2PS_STM_App_Notification_evt_t *pNotification)
     case P2PS_STM_WRITE_EVT:
 /* USER CODE BEGIN P2PS_STM_WRITE_EVT */
 
-    	 uint8_t *raw = pNotification->DataTransfered.pPayload;
-    	    uint8_t len  = pNotification->DataTransfered.Length;
+    	uint8_t *raw = pNotification->DataTransfered.pPayload;
+    	uint8_t len  = pNotification->DataTransfered.Length;
 
-    	    APP_DBG_MSG("RAW (%d bytes): ", len);
-    	    for(uint8_t i = 0; i < len; i++)
-    	    {
-    	        APP_DBG_MSG("0x%02X ", raw[i]);
-    	    }
-    	    APP_DBG_MSG("\n");
+    	APP_DBG_MSG("RAW (%d bytes): ", len);
+    	for(uint8_t i = 0; i < len; i++)
+    	{
+    	    APP_DBG_MSG("0x%02X ", raw[i]);
+    	}
+    	APP_DBG_MSG("\n");
 
-    	    uint8_t device_id = raw[0];
-    	    uint8_t temp      = raw[1];
+    	if (len < 2) {
+    	    APP_DBG_MSG("FRAME TOO SHORT (len=%d)\n", len);
+    	    return;
+    	}
 
-    	    APP_DBG_MSG(">> RECEIVED TEMP = %d C\n", temp);
+    	uint8_t device_id = raw[0];
+    	temp = raw[1];
+
+    	uint32_t press = 0;
+
+    	if (len >= 6) {
+    	    press =
+    	          ((uint32_t)raw[2] << 0)
+    	        | ((uint32_t)raw[3] << 8)
+    	        | ((uint32_t)raw[4] << 16)
+    	        | ((uint32_t)raw[5] << 24);
+    	} else {
+    	    APP_DBG_MSG("NO PRESSURE DATA (len=%d)\n", len);
+    	}
+    	pressure = press;
+    	APP_DBG_MSG(">> RX | TEMP=%d C, PRESS=%lu Pa\n", temp, press);
+
 
 
 

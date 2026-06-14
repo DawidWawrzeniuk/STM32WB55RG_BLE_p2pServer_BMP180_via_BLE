@@ -104,6 +104,16 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_hsem.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_i2c.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_i2c.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_i2c_ex.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_i2c_ex.c</locationURI>
+		</link>
+		<link>
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_ipcc.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_ipcc.c</locationURI>
@@ -144,16 +154,6 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_rtc_ex.c</locationURI>
 		</link>
 		<link>
-			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tim.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_tim.c</locationURI>
-		</link>
-		<link>
-			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_tim_ex.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_tim_ex.c</locationURI>
-		</link>
-		<link>
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_uart.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_uart.c</locationURI>
@@ -162,6 +162,11 @@
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_uart_ex.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_uart_ex.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_ll_rcc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_rcc.c</locationURI>
 		</link>
 		<link>
 			<name>Middlewares/STM32_WPAN/ble_gap_aci.c</name>

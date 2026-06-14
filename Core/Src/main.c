@@ -42,7 +42,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+#include "OLED_SSD1306.h"
+#include "GFX_BW.h"
+#include "fonts.h"
+#include "picture.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,6 +67,9 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_tx;
+
 IPCC_HandleTypeDef hipcc;
 
 UART_HandleTypeDef hlpuart1;
@@ -73,6 +82,7 @@ RNG_HandleTypeDef hrng;
 RTC_HandleTypeDef hrtc;
 
 /* USER CODE BEGIN PV */
+volatile uint16_t timer_1s;
 
 /* USER CODE END PV */
 
@@ -84,6 +94,7 @@ static void MX_DMA_Init(void);
 static void MX_RTC_Init(void);
 static void MX_IPCC_Init(void);
 static void MX_RNG_Init(void);
+static void MX_I2C1_Init(void);
 static void MX_RF_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -119,7 +130,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
@@ -134,8 +145,23 @@ int main(void)
   MX_DMA_Init();
   MX_RTC_Init();
   MX_RNG_Init();
+  MX_I2C1_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
+  MX_DMA_Init();
+  SSD1306_I2cInit(&hi2c1);
+
+  SSD1306_Bitmap((uint8_t*)picture);
+  HAL_Delay(5000);
+  GFX_SetFont(font_8x5);
+  GFX_SetFontSize(1);
+
+
+    uint16_t frames = 0, fps = 0;
+    uint32_t loops = 0, loops_overal = 0;
+    char fps_c[20];
+
+
 
   /* USER CODE END 2 */
 
@@ -144,8 +170,50 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+    HAL_Delay(100);
 	while(1)
 	{
+		if(!timer_1s)
+		{
+			timer_1s = 1000;
+			fps = frames;
+			frames = 0;
+			loops_overal = loops;
+			loops = 0;
+		}
+
+
+
+
+		if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
+		{
+			SSD1306_Clear(BLACK);
+			extern uint8_t temp;
+			extern uint32_t pressure;
+			uint32_t pressure_hPa=0;
+			pressure_hPa = pressure/100;
+
+
+
+
+			char txt[20];
+			sprintf(txt, "Temperature: %d C", temp);
+			GFX_DrawString(10,30, txt, WHITE, BLACK);
+
+			char txt2[20];
+			sprintf(txt2, "Pressure: %lu hPa", pressure_hPa);
+			GFX_DrawString(10, 40, txt2, WHITE, BLACK);
+
+
+
+
+
+
+			SSD1306_Display();   // aktualizacja ekranu
+			loops++;
+	  	}
+		HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, 0);
+		loops++;
     /* USER CODE END WHILE */
     MX_APPE_Process();
 
@@ -228,6 +296,54 @@ void PeriphCommonClock_Config(void)
   /* USER CODE BEGIN Smps */
 
   /* USER CODE END Smps */
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.Timing = 0x00B07CB4;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**
@@ -455,6 +571,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA2_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
   /* DMA1_Channel4_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
@@ -471,16 +590,27 @@ static void MX_DMA_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : TEST_Pin */
+  GPIO_InitStruct.Pin = TEST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(TEST_GPIO_Port, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
@@ -498,8 +628,7 @@ void Error_Handler(void)
 
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

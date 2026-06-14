@@ -62,6 +62,8 @@ void MX_USART1_UART_Init(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define TEST_Pin GPIO_PIN_0
+#define TEST_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

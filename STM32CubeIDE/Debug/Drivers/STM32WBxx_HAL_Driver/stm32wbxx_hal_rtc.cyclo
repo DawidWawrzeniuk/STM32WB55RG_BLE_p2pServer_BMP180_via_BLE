@@ -23,4 +23,4 @@ C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/Drivers/STM32WBxx_HAL
 C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_rtc.c:1848:19:RTC_EnterInitMode	5
 C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_rtc.c:1883:19:RTC_ExitInitMode	3
 C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_rtc.c:1909:9:RTC_ByteToBcd2	2
-C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_rtc.c:1928:9:RTC_Bcd2ToByte	1
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_rtc.c:1927:9:RTC_Bcd2ToByte	1

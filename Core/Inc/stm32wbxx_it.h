@@ -23,7 +23,7 @@
 #define __STM32WBxx_IT_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /* Private includes ----------------------------------------------------------*/
@@ -57,6 +57,7 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 void RTC_WKUP_IRQHandler(void);
+void DMA1_Channel1_IRQHandler(void);
 void DMA1_Channel4_IRQHandler(void);
 void USART1_IRQHandler(void);
 void LPUART1_IRQHandler(void);

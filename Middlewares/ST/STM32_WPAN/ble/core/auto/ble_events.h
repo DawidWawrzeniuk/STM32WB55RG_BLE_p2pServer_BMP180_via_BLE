@@ -52,7 +52,7 @@ extern const hci_event_table_t hci_vs_event_table[HCI_VS_EVENT_TABLE_SIZE];
  * Connection error codes (0x13 to 0x15), Unsupported Remote Feature error code
  * (0x1A), and Unacceptable Connection Parameters error code (0x3B).
  * See Core Specification [Vol 4, Part E, 7.7.5].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -83,7 +83,7 @@ void hci_disconnection_complete_event( uint8_t Status,
  * refers to an LE link, the Controller shall only use Encryption_Enabled
  * values 0x00 (OFF) and 0x01 (ON).
  * See Core Specification [Vol 4, Part E, 7.7.8].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -118,7 +118,7 @@ void hci_encryption_change_event( uint8_t Status,
  * Manufacturer_Name event parameter shall be the CompId parameter, and the
  * Subversion event parameter shall be the SubVersNr parameter.
  * See Core Specification [Vol 4, Part E, 7.7.12].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -139,7 +139,7 @@ void hci_read_remote_version_information_complete_event( uint8_t Status,
  * This event is used to notify the Host that a hardware failure has occurred
  * in the Controller.
  * Refer to Annex for details on the possible values of Hardware_Code.
- *
+ * 
  * @param Hardware_Code Implementation-specific hardware code.
  * @return None
  */
@@ -160,7 +160,7 @@ void hci_hardware_error_event( uint8_t Hardware_Code );
  * HCI data packets in its buffer, it must keep sending the Number Of Completed
  * Packets event to the Host at least periodically, until it finally reports
  * that all the pending ACL Data Packets have been transmitted or flushed.
- *
+ * 
  * @param Number_of_Handles The number of Connection_Handles and
  *        Num_HCI_Data_Packets parameters pairs contained in this event
  * @param Handle_Packets_Pair_Entry See @ref Handle_Packets_Pair_Entry_t
@@ -175,7 +175,7 @@ void hci_number_of_completed_packets_event( uint8_t Number_of_Handles,
  * refreshed on the given Connection_Handle. The Controller sends this event
  * when the encryption key has been refreshed due to encryption being started
  * or resumed.
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -200,7 +200,7 @@ void hci_encryption_key_refresh_complete_event( uint8_t Status,
  * The Central_Clock_Accuracy parameter is only valid for a Peripheral. On a
  * Central, this parameter is set to 0x00.
  * See Core Specification [Vol 4, Part E, 7.7.65.1].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -261,7 +261,7 @@ void hci_le_connection_complete_event( uint8_t Status,
  * See Core Specification [Vol 4, Part E, 7.7.65.2].
  * Note: in the current BLE stack version, only one report is sent per event
  * (Num_Reports = 1).
- *
+ * 
  * @param Num_Reports Number of responses in this event.
  *        Values:
  *        - 0x01
@@ -276,7 +276,7 @@ void hci_le_advertising_report_event( uint8_t Num_Reports,
  * This event is used to indicate that the Controller process to update the
  * connection has completed.
  * See Core Specification [Vol 4, Part E, 7.7.65.3].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -310,7 +310,7 @@ void hci_le_connection_update_complete_event( uint8_t Status,
  * features supported by the remote BLE device specified by the
  * Connection_Handle parameter.
  * See Core Specification [Vol 4, Part E, 7.7.65.4].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -328,7 +328,7 @@ void hci_le_read_remote_features_page_0_complete_event( uint8_t Status,
  * This event indicates that the Central is attempting to encrypt or re-encrypt
  * the link and is requesting the Long Term Key from the Host.
  * See Core Specification [Vol 6, Part B, 5.1.3] and [Vol 4, Part E, 7.7.65.5].
- *
+ * 
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -350,7 +350,7 @@ void hci_le_long_term_key_request_event( uint16_t Connection_Handle,
  * a lower value.
  * See Core Specification [Vol 4, Part E, 7.7.65.7] and [Vol 6, Part B,
  * 4.5.10].
- *
+ * 
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -385,7 +385,7 @@ void hci_le_data_length_change_event( uint16_t Connection_Handle,
  * @brief HCI_LE_READ_LOCAL_P256_PUBLIC_KEY_COMPLETE_EVENT
  * This event is generated when local P-256 key generation is complete.
  * See Core Specification [Vol 4, Part E, 7.7.65.8].
- *
+ * 
  * @param Status Status error code.
  * @param Local_P256_Public_Key Local P-256 public key.
  * @return None
@@ -398,7 +398,7 @@ void hci_le_read_local_p256_public_key_complete_event( uint8_t Status,
  * This event indicates that LE Diffie Hellman key generation has been
  * completed by the Controller.
  * See Core Specification [Vol 4, Part E, 7.7.65.9].
- *
+ * 
  * @param Status Status error code.
  * @param DHKey Diffie Hellman Key
  * @return None
@@ -422,7 +422,7 @@ void hci_le_generate_dhkey_complete_event( uint8_t Status,
  * The Central_Clock_Accuracy parameter is only valid for a Peripheral. On a
  * Central, this parameter is set to 0x00.
  * See Core Specification [Vol 4, Part E, 7.7.65.10].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -500,7 +500,7 @@ void hci_le_enhanced_connection_complete_event( uint8_t Status,
  * advertisements are being directed to. Address_Type and Address specify the
  * address of the advertiser sending the directed advertisements.
  * See Core Specification [Vol 4, Part E, 7.7.65.11].
- *
+ * 
  * @param Num_Reports Number of responses in this event.
  *        Values:
  *        - 0x01
@@ -519,7 +519,7 @@ void hci_le_directed_advertising_report_event( uint8_t Num_Reports,
  * If an LE_Set_PHY command was sent and the Controller determines that neither
  * PHY will change as a result, it issues this event immediately.
  * See Core Specification [Vol 4, Part E, 7.7.65.12].
- *
+ * 
  * @param Status Status error code.
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
@@ -544,7 +544,7 @@ void hci_le_phy_update_complete_event( uint8_t Status,
  * This event indicates that a BLE device has responded to an active scan or
  * has broadcast advertisements that were received during a passive scan.
  * See Core Specification [Vol 4, Part E, 7.7.65.13].
- *
+ * 
  * @param Num_Reports Number of responses in this event.
  *        Values:
  *        - 0x01
@@ -634,7 +634,7 @@ void hci_le_extended_advertising_report_event( uint8_t Num_Reports,
  * This event indicates that scanning has ended because the duration has
  * expired.
  * See Core Specification [Vol 4, Part E, 7.7.65.17].
- *
+ * 
  * @return None
  */
 void hci_le_scan_timeout_event( void );
@@ -644,7 +644,7 @@ void hci_le_scan_timeout_event( void );
  * This event indicates that the Controller has terminated advertising in the
  * advertising sets specified by the Advertising_Handle parameter.
  * See Core Specification [Vol 4, Part E, 7.7.65.18].
- *
+ * 
  * @param Status Status error code.
  * @param Advertising_Handle Used to identify an advertising set.
  *        Values:
@@ -670,7 +670,7 @@ void hci_le_advertising_set_terminated_event( uint8_t Status,
  * scanner that is allowed by the advertising filter policy. The advertising
  * set is identified by Advertising_Handle.
  * See Core Specification [Vol 4, Part E, 7.7.65.19].
- *
+ * 
  * @param Advertising_Handle Used to identify an advertising set.
  *        Values:
  *        - 0x00 ... 0xEF
@@ -696,7 +696,7 @@ void hci_le_scan_request_received_event( uint8_t Advertising_Handle,
  * This event indicates which channel selection algorithm is used on a data
  * physical channel connection.
  * See Core Specification [Vol 4, Part E, 7.7.65.20].
- *
+ * 
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -714,7 +714,7 @@ void hci_le_channel_selection_algorithm_event( uint16_t Connection_Handle,
 /**
  * @brief ACI_WARNING_EVENT
  * This event is generated to report warning information.
- *
+ * 
  * @param Warning_Type Warning type
  *        Values:
  *        - 0x01: L2CAP recombination failure
@@ -738,7 +738,7 @@ void aci_warning_event( uint8_t Warning_Type,
  * @brief ACI_GAP_LIMITED_DISCOVERABLE_EVENT
  * This event is generated by the controller when the limited discoverable mode
  * ends due to timeout. The timeout is 180 seconds.
- *
+ * 
  * @return None
  */
 void aci_gap_limited_discoverable_event( void );
@@ -750,7 +750,7 @@ void aci_gap_limited_discoverable_event( void );
  * is to notify the application that we have paired with a remote device so
  * that it can take further actions or to notify that a timeout has occurred so
  * that the upper layer can decide to disconnect the link.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -788,7 +788,7 @@ void aci_gap_pairing_complete_event( uint16_t Connection_Handle,
  * This event is generated by the Security manager to the application when a
  * passkey is required for pairing. When this event is received, the
  * application has to respond with the ACI_GAP_PASS_KEY_RESP command.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -803,7 +803,7 @@ void aci_gap_pass_key_req_event( uint16_t Connection_Handle );
  * attributes. This event will be generated as soon as the pairing is complete.
  * When this event is received, ACI_GAP_AUTHORIZATION_RESP command should be
  * used to respond by the application.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -818,7 +818,7 @@ void aci_gap_authorization_req_event( uint16_t Connection_Handle );
  * the Peripheral. When this event is received, the upper layer has to issue
  * the command ACI_GAP_ALLOW_REBOND in order to allow the Peripheral to
  * continue the pairing process with the Central.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -831,7 +831,7 @@ void aci_gap_bond_lost_event( uint16_t Connection_Handle );
  * This event is sent by the GAP to the upper layers when a procedure
  * previously started has been terminated by the upper layer or has completed
  * for any other reason
- *
+ * 
  * @param Procedure_Code Terminated procedure.
  *        Values:
  *        - 0x01: GAP_LIMITED_DISCOVERY_PROC
@@ -857,7 +857,7 @@ void aci_gap_proc_complete_event( uint8_t Procedure_Code,
  * bonded device list. The event is sent to the application when the peripheral
  * is unsuccessful in resolving the resolvable address of the peer device after
  * connecting to it.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -871,7 +871,7 @@ void aci_gap_addr_not_resolved_event( uint16_t Connection_Handle );
  * Association model is selected, in order to show the Numeric Value generated,
  * and to ask for Confirmation to the User. When this event is received, the
  * application has to respond with the ACI_GAP_NUMERIC_COMPARISON_RESP command.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -887,7 +887,7 @@ void aci_gap_numeric_comparison_value_event( uint16_t Connection_Handle,
  * supported, in order to show the input type signaled by the peer device,
  * having Keyboard only I/O capabilities. When this event is received, no
  * action is required to the User.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -907,7 +907,7 @@ void aci_gap_keypress_notification_event( uint16_t Connection_Handle,
  * sending of a Pairing Request.
  * The application shall respond to this event with
  * ACI_GAP_PAIRING_REQUEST_REPLY command.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -936,7 +936,7 @@ void aci_gap_pairing_request_event( uint16_t Connection_Handle,
  * - write characteristic value
  * - write long characteristic value
  * - reliable write.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -968,8 +968,10 @@ void aci_gatt_attribute_modified_event( uint16_t Connection_Handle,
  * does not provide a reply to GATT procedures. After this event, the GATT
  * channel is closed and no more GATT communication can be performed. The
  * application is expected to issue an ACI_GAP_TERMINATE to disconnect from the
- * peer device.
- *
+ * peer device. It is important to leave a 100 ms blank window before sending
+ * the ACI_GAP_TERMINATE, since immediately after this event, system could save
+ * important information in non-volatile memory.
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -985,7 +987,7 @@ void aci_gatt_proc_timeout_event( uint16_t Connection_Handle );
  * @brief ACI_ATT_EXCHANGE_MTU_RESP_EVENT
  * This event is generated in response to an Exchange MTU request. See
  * ACI_GATT_EXCHANGE_CONFIG.
- *
+ * 
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1000,7 +1002,7 @@ void aci_att_exchange_mtu_resp_event( uint16_t Connection_Handle,
  * This event is generated in response to a Find Information Request. See
  * ACI_ATT_FIND_INFO_REQ and Find Information Response in Core Specification.
  * This event is also generated in response to ACI_GATT_DISC_ALL_CHAR_DESC
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1023,7 +1025,7 @@ void aci_att_find_info_resp_event( uint16_t Connection_Handle,
 /**
  * @brief ACI_ATT_FIND_BY_TYPE_VALUE_RESP_EVENT
  * This event is generated in response to a ACI_ATT_FIND_BY_TYPE_VALUE_REQ
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1043,7 +1045,7 @@ void aci_att_find_by_type_value_resp_event( uint16_t Connection_Handle,
  * @brief ACI_ATT_READ_BY_TYPE_RESP_EVENT
  * This event is generated in response to a ACI_ATT_READ_BY_TYPE_REQ. See
  * ACI_GATT_FIND_INCLUDED_SERVICES and ACI_GATT_DISC_ALL_CHAR_DESC.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1068,7 +1070,7 @@ void aci_att_read_by_type_resp_event( uint16_t Connection_Handle,
  * @brief ACI_ATT_READ_RESP_EVENT
  * This event is generated in response to a Read Request. See
  * ACI_GATT_READ_CHAR_VALUE.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1088,7 +1090,7 @@ void aci_att_read_resp_event( uint16_t Connection_Handle,
  * @brief ACI_ATT_READ_BLOB_RESP_EVENT
  * This event can be generated during a read long characteristic value
  * procedure. See ACI_GATT_READ_LONG_CHAR_VALUE.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1108,7 +1110,7 @@ void aci_att_read_blob_resp_event( uint16_t Connection_Handle,
  * @brief ACI_ATT_READ_MULTIPLE_RESP_EVENT
  * This event is generated in response to a Read Multiple Characteristic Values
  * Request or a Read Multiple Variable Length Characteristic Values Request.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1130,7 +1132,7 @@ void aci_att_read_multiple_resp_event( uint16_t Connection_Handle,
  * @brief ACI_ATT_READ_BY_GROUP_TYPE_RESP_EVENT
  * This event is generated in response to a Read By Group Type Request. See
  * ACI_GATT_DISC_ALL_PRIMARY_SERVICES.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1154,7 +1156,7 @@ void aci_att_read_by_group_type_resp_event( uint16_t Connection_Handle,
 /**
  * @brief ACI_ATT_PREPARE_WRITE_RESP_EVENT
  * This event is generated in response to a ACI_ATT_PREPARE_WRITE_REQ.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1177,7 +1179,7 @@ void aci_att_prepare_write_resp_event( uint16_t Connection_Handle,
 /**
  * @brief ACI_ATT_EXEC_WRITE_RESP_EVENT
  * This event is generated in response to an Execute Write Request.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1192,7 +1194,7 @@ void aci_att_exec_write_resp_event( uint16_t Connection_Handle );
 /**
  * @brief ACI_GATT_INDICATION_EVENT
  * This event is generated when an indication is received from the server.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1213,7 +1215,7 @@ void aci_gatt_indication_event( uint16_t Connection_Handle,
 /**
  * @brief ACI_GATT_NOTIFICATION_EVENT
  * This event is generated when a notification is received from the server.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1235,7 +1237,7 @@ void aci_gatt_notification_event( uint16_t Connection_Handle,
  * @brief ACI_GATT_PROC_COMPLETE_EVENT
  * This event is generated when a GATT client procedure completes either with
  * error or successfully.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1256,7 +1258,7 @@ void aci_gatt_proc_complete_event( uint16_t Connection_Handle,
  * The error response can be given by the server at the end of one of the GATT
  * discovery procedures. This does not mean that the procedure ended with an
  * error, but this error event is part of the procedure itself.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1304,7 +1306,7 @@ void aci_gatt_error_resp_event( uint16_t Connection_Handle,
  * Specification [Vol 3, Part G, 3.3.1], when a "Discover Characteristics By
  * UUID" has been started. It will be the value of the Characteristic if a*
  * "Read using Characteristic UUID" has been performed.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1334,7 +1336,7 @@ void aci_gatt_disc_read_char_by_uuid_resp_event( uint16_t Connection_Handle,
  * generation is set when the characteristic was added.
  * When this event is received, the application has to check whether the value
  * being requested for write can be allowed to be written and respond with the
- * command ACI_GATT_PERMIT_WRITE.
+ * command ACI_GATT_WRITE_RESP.
  * The details of the parameters of the command can be found. Based on the
  * response from the application, the attribute value will be modified by the
  * stack. If the write is rejected by the application, then the value of the
@@ -1343,7 +1345,7 @@ void aci_gatt_disc_read_char_by_uuid_resp_event( uint16_t Connection_Handle,
  * application.
  * In case of write/signed write commands, no response is sent to the client
  * but the attribute is not modified.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1368,9 +1370,9 @@ void aci_gatt_write_permit_req_event( uint16_t Connection_Handle,
  * to the application only if the event bit for this event generation is set
  * when the characteristic was added.
  * On receiving this event, the application can update the value of the handle
- * if it desires and when done, it must send the ACI_GATT_PERMIT_READ command
- * to indicate to the stack that it can send the response to the client.
- *
+ * if it desires and when done, it must send the ACI_GATT_ALLOW_READ command to
+ * indicate to the stack that it can send the response to the client.
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1393,10 +1395,10 @@ void aci_gatt_read_permit_req_event( uint16_t Connection_Handle,
  * be given to the application only if the event bit for this event generation
  * is set when the characteristic was added.
  * On receiving this event, the application can update the values of the
- * handles if it desires and when done, it must send the ACI_GATT_PERMIT_READ
+ * handles if it desires and when done, it must send the ACI_GATT_ALLOW_READ
  * command to indicate to the stack that it can send the response to the
  * client.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1404,7 +1406,6 @@ void aci_gatt_read_permit_req_event( uint16_t Connection_Handle,
  *          connection handle)
  *        - 0xEA00 ... 0xEA3F: Enhanced ATT bearer (the LSB-byte of the
  *          parameter is the connection-oriented channel index)
- * @param Number_of_Handles Number of attribute handles contained in this event
  * @param Handle_Item See @ref Handle_Item_t
  * @return None
  */
@@ -1423,7 +1424,7 @@ void aci_gatt_read_multi_permit_req_event( uint16_t Connection_Handle,
  * - ACI_GATT_SEND_MULT_NOTIFICATION,
  * - ACI_GATT_WRITE_WITHOUT_RESP,
  * - ACI_GATT_SIGNED_WRITE_WITHOUT_RESP.
- *
+ * 
  * @param Connection_Handle Not used.
  * @param Available_Buffers Number of buffers available.
  * @return None
@@ -1435,7 +1436,7 @@ void aci_gatt_tx_pool_available_event( uint16_t Connection_Handle,
  * @brief ACI_GATT_SERVER_CONFIRMATION_EVENT
  * This event is generated when the client has sent the confirmation to a
  * previously sent indication
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1455,12 +1456,12 @@ void aci_gatt_server_confirmation_event( uint16_t Connection_Handle );
  * characteristic was added.
  * When this event is received, the application has to check whether the value
  * being requested for write can be allowed to be written and respond with the
- * command ACI_GATT_PERMIT_WRITE. Based on the response from the application,
- * the attribute value will be modified by the stack.
+ * command ACI_GATT_WRITE_RESP. Based on the response from the application, the
+ * attribute value will be modified by the stack.
  * If the write is rejected by the application, then the value of the attribute
  * will not be modified and an error response will be sent to the client, with
  * the error code as specified by the application.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1484,7 +1485,7 @@ void aci_gatt_prepare_write_permit_req_event( uint16_t Connection_Handle,
  * @brief ACI_GATT_EATT_BEARER_EVENT
  * This event informs the application of a change in status of the Enhanced ATT
  * bearer handled by the specified L2CAP channel.
- *
+ * 
  * @param Connection_Handle Connection handle for which the event applies.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1509,7 +1510,7 @@ void aci_gatt_eatt_bearer_event( uint16_t Connection_Handle,
  * @brief ACI_GATT_MULT_NOTIFICATION_EVENT
  * This event is generated when a Multiple Handle Value notification is
  * received from the server.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1537,7 +1538,7 @@ void aci_gatt_mult_notification_event( uint16_t Connection_Handle,
  * enabled at the creation of the characteristic with
  * GATT_NOTIFY_NOTIFICATION_COMPLETION mask and if the characteristic supports
  * notifications).
- *
+ * 
  * @param Attr_Handle Handle of the updated characteristic value
  * @return None
  */
@@ -1551,7 +1552,7 @@ void aci_gatt_notification_complete_event( uint16_t Attr_Handle );
  * This event should be used instead of those events when ATT_MTU >
  * (BLE_EVT_MAX_PARAM_LEN - 4) i.e. ATT_MTU > 251 for BLE_EVT_MAX_PARAM_LEN
  * default value.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1579,7 +1580,7 @@ void aci_gatt_read_ext_event( uint16_t Connection_Handle,
  * This event should be used instead of ACI_GATT_INDICATION_EVENT when ATT_MTU
  * > (BLE_EVT_MAX_PARAM_LEN - 4) i.e. ATT_MTU > 251 for BLE_EVT_MAX_PARAM_LEN
  * default value.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1609,7 +1610,7 @@ void aci_gatt_indication_ext_event( uint16_t Connection_Handle,
  * This event should be used instead of ACI_GATT_NOTIFICATION_EVENT when
  * ATT_MTU > (BLE_EVT_MAX_PARAM_LEN - 4) i.e. ATT_MTU > 251 for
  * BLE_EVT_MAX_PARAM_LEN default value.
- *
+ * 
  * @param Connection_Handle Specifies the ATT bearer for which the event
  *        applies.
  *        Values:
@@ -1637,7 +1638,7 @@ void aci_gatt_notification_ext_event( uint16_t Connection_Handle,
  * @brief ACI_L2CAP_CONNECTION_UPDATE_RESP_EVENT
  * This event is generated when the Central responds to the connection update
  * request packet with a connection update response packet.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1655,7 +1656,7 @@ void aci_l2cap_connection_update_resp_event( uint16_t Connection_Handle,
  * This event is generated when the Central does not respond to the connection
  * update request packet with a connection update response packet or a command
  * reject packet within 30 seconds.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1674,7 +1675,7 @@ void aci_l2cap_proc_timeout_event( uint16_t Connection_Handle,
  * The event is given by the L2CAP layer when a connection update request is
  * received from the Peripheral. The upper layer which receives this event has
  * to respond by sending a ACI_L2CAP_CONNECTION_PARAMETER_UPDATE_RESP command.
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1709,7 +1710,7 @@ void aci_l2cap_connection_update_req_event( uint16_t Connection_Handle,
  * This event is generated upon receipt of a valid L2CAP Command Reject packet
  * (e.g. when the Central responds to the Connection Update Request packet with
  * a L2CAP Command Reject packet).
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1735,7 +1736,7 @@ void aci_l2cap_command_reject_event( uint16_t Connection_Handle,
  * This event is generated when receiving a valid Credit Based Connection
  * Request packet.
  * See Core Specification [Vol 3, Part A].
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1774,7 +1775,7 @@ void aci_l2cap_coc_connect_event( uint16_t Connection_Handle,
  * This event is generated when receiving a valid Credit Based Connection
  * Response packet.
  * See Core Specification [Vol 3, Part A].
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1817,7 +1818,7 @@ void aci_l2cap_coc_connect_confirm_event( uint16_t Connection_Handle,
  * This event is generated when receiving a valid Credit Based Reconfigure
  * Request packet.
  * See Core Specification [Vol 3, Part A].
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1848,7 +1849,7 @@ void aci_l2cap_coc_reconf_event( uint16_t Connection_Handle,
  * This event is generated when receiving a valid Credit Based Reconfigure
  * Response packet.
  * See Core Specification [Vol 3, Part A].
- *
+ * 
  * @param Connection_Handle Handle of the connection where this event occurred.
  *        Values:
  *        - 0x0000 ... 0x0EFF
@@ -1866,7 +1867,7 @@ void aci_l2cap_coc_reconf_confirm_event( uint16_t Connection_Handle,
  * This event is generated when a connection-oriented channel is disconnected
  * following an L2CAP channel termination procedure.
  * See Core Specification [Vol 3, Part A].
- *
+ * 
  * @param Channel_Index Index of the connection-oriented channel for which the
  *        primitive applies.
  * @return None
@@ -1878,7 +1879,7 @@ void aci_l2cap_coc_disconnect_event( uint8_t Channel_Index );
  * This event is generated when receiving a valid Flow Control Credit signaling
  * packet.
  * See Core Specification [Vol 3, Part A].
- *
+ * 
  * @param Channel_Index Index of the connection-oriented channel for which the
  *        primitive applies.
  * @param Credits Number of credits the receiving device can increment,
@@ -1900,7 +1901,7 @@ void aci_l2cap_coc_flow_control_event( uint8_t Channel_Index,
  * L2CAP SDU Length coded on two octets followed by the K-frame information
  * payload. For the next K-frames of the SDU, the Information data only
  * contains the K-frame information payload.
- *
+ * 
  * @param Channel_Index Index of the connection-oriented channel for which the
  *        primitive applies.
  * @param Length Length of Data (in octets)
@@ -1917,7 +1918,7 @@ void aci_l2cap_coc_rx_data_event( uint8_t Channel_Index,
  * BLE_STATUS_INSUFFICIENT_RESOURCES, the ACI_L2CAP_COC_TX_POOL_AVAILABLE_EVENT
  * event is generated as soon as there is a free buffer available for sending
  * K-frames.
- *
+ * 
  * @return None
  */
 void aci_l2cap_coc_tx_pool_available_event( void );
@@ -1939,7 +1940,7 @@ void aci_l2cap_coc_tx_pool_available_event( void );
  * Application use cases includes synchronizing notification with connection
  * interval, switching antenna at the end of advertising or performing flash
  * erase operation while radio is idle.
- *
+ * 
  * @param Last_State Completed radio event
  *        Values:
  *        - 0x00: Idle
@@ -1981,7 +1982,7 @@ void aci_hal_end_of_radio_activity_event( uint8_t Last_State,
  * This event is reported to the application after a scan request is received
  * and a scan response is scheduled to be transmitted.
  * Note: RSSI in this event is valid only when privacy is not used.
- *
+ * 
  * @param RSSI RSSI (signed integer).
  *        Units: dBm.
  *        Values:

@@ -24,6 +24,8 @@ Application/User/Core/main.o: \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_gpio.h \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_gpio_ex.h \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_hsem.h \
+ ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c.h \
+ ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c_ex.h \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_ipcc.h \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr.h \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_pwr.h \
@@ -58,7 +60,12 @@ Application/User/Core/main.o: \
  ../../Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo_errno.h \
  ../../Core/Inc/stm32wbxx_nucleo_conf.h \
  ../../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h \
- ../../Core/Inc/app_entry.h ../../Core/Inc/app_common.h
+ ../../Core/Inc/app_entry.h ../../Core/Inc/app_common.h \
+ C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/OLED_SSD1306.h \
+ C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/GFX_BW.h \
+ C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/fonts.h \
+ C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/font_8x5.h \
+ C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/picture.h
 ../../Core/Inc/main.h:
 ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h:
 ../../Core/Inc/stm32wbxx_hal_conf.h:
@@ -83,6 +90,8 @@ Application/User/Core/main.o: \
 ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_gpio.h:
 ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_gpio_ex.h:
 ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_hsem.h:
+../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c.h:
+../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_i2c_ex.h:
 ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_ipcc.h:
 ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_pwr.h:
 ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_pwr.h:
@@ -120,3 +129,8 @@ Application/User/Core/main.o: \
 ../../Middlewares/ST/STM32_WPAN/ble/core/ble_bufsize.h:
 ../../Core/Inc/app_entry.h:
 ../../Core/Inc/app_common.h:
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/OLED_SSD1306.h:
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/GFX_BW.h:
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/fonts.h:
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/font_8x5.h:
+C:/Users/dawi2/STM32CubeIDE/workspace_1.19.0/BLE_p2pServer/STM32CubeIDE/Application/User/Core/picture.h:
