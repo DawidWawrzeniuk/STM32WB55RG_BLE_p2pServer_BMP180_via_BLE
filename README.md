@@ -49,3 +49,120 @@ uint32_t press =
 
 pressure = press;
 ````
+
+
+
+2. Notify Characteristic (Server → Client)
+UUID: P2P_NOTIFY_CHAR_UUID  
+Properties: NOTIFY  
+Length: 2 bytes
+
+Used to send button/LED status back to the client.
+
+#📥 BLE Data Handling (p2p_server_app.c)
+Incoming BLE writes are processed inside:
+
+c
+case P2PS_STM_WRITE_EVT:
+The server:
+
+Logs raw bytes
+
+Validates payload length
+
+Extracts temperature
+
+Extracts pressure (if available)
+
+Updates global variables
+
+Example logging:
+````c
+APP_DBG_MSG("RAW (%d bytes): ", len);
+for(uint8_t i = 0; i < len; i++)
+{
+    APP_DBG_MSG("0x%02X ", raw[i]);
+}
+APP_DBG_MSG("\n");
+````
+
+#📺 OLED Display Rendering
+The server displays the received values on an SSD1306 OLED using DMA‑driven I2C.
+
+Rendering loop (main.c):
+
+````c
+if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
+{
+    SSD1306_Clear(BLACK);
+
+    extern uint8_t temp;
+    extern uint32_t pressure;
+
+    uint32_t pressure_hPa = pressure / 100;
+
+    char txt[20];
+    sprintf(txt, "Temperature: %d C", temp);
+    GFX_DrawString(10, 30, txt, WHITE, BLACK);
+
+    char txt2[20];
+    sprintf(txt2, "Pressure: %lu hPa", pressure_hPa);
+    GFX_DrawString(10, 40, txt2, WHITE, BLACK);
+
+    SSD1306_Display();
+}
+````
+
+#⏱ Timer & Refresh Logic
+A 1 ms RTC wakeup interrupt increments a software timer.
+The OLED refreshes only when:
+
+```c
+hi2c1.hdmatx->State == HAL_DMA_STATE_READY
+This prevents I2C bus contention and ensures smooth rendering.
+```
+#🌡 Global Variables (Server)
+```c
+uint8_t temp = 0;
+uint32_t pressure = 0;
+These are updated exclusively by BLE events.
+```
+#📤 BLE Client Payload Format
+The BLE client sends:
+
+````c
+uint8_t payload[6];
+payload[0] = 0x01;          // Device ID
+payload[1] = temperature;   // 1 byte
+payload[2] = pressure >> 0;
+payload[3] = pressure >> 8;
+payload[4] = pressure >> 16;
+payload[5] = pressure >> 24;
+````
+Transmission:
+````c
+aci_gatt_write_without_resp(connHandle, charHandle, 6, payload);
+````
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
