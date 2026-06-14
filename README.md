@@ -66,11 +66,17 @@ Incoming BLE writes are processed inside:
 case P2PS_STM_WRITE_EVT:
 ```
 The server:
+
 1.Logs raw bytes
+
 2.Validates payload length
+
 3.Extracts temperature
+
 4.Extracts pressure (if available)
+
 5.Updates global variables
+
 
 
 Example logging:
