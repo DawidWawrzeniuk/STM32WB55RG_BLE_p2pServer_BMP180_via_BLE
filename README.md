@@ -20,9 +20,9 @@ The project is based on the official P2P Server example from STMicroelectronics 
 The server exposes a Peer-to-Peer (P2P) Service with two characteristics:
 
 **1. Write Characteristic (Client → Server)**
-UUID: P2P_WRITE_CHAR_UUID  
-Properties: WRITE_WITHOUT_RESP | READ  
-Max length: 6 bytes
+* UUID: P2P_WRITE_CHAR_UUID  
+* Properties: WRITE_WITHOUT_RESP | READ  
+* Max length: 6 bytes
 
 **Payload format:**
 
@@ -54,32 +54,32 @@ pressure = press;
 
 **2. Notify Characteristic (Server → Client)**
 
-UUID: P2P_NOTIFY_CHAR_UUID  
+* UUID: P2P_NOTIFY_CHAR_UUID  
 
-Properties: NOTIFY  
+* Properties: NOTIFY  
 
-Length: 2 bytes
+* Length: 2 bytes
 
 
 Used to send button/LED status back to the client.
 
 # 📥 BLE Data Handling (p2p_server_app.c)
-Incoming BLE writes are processed inside:
+**Incoming BLE writes are processed inside:**
 
 ```c
 case P2PS_STM_WRITE_EVT:
 ```
 **The server:**
 
-1.Logs raw bytes
+1. Logs raw bytes
 
-2.Validates payload length
+2. Validates payload length
 
-3.Extracts temperature
+3. Extracts temperature
 
-4.Extracts pressure (if available)
+4. Extracts pressure (if available)
 
-5.Updates global variables
+5. Updates global variables
 
 
 
@@ -121,8 +121,8 @@ if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
 ````
 
 #⏱ Timer & Refresh Logic
-A 1 ms RTC wakeup interrupt increments a software timer.
-The OLED refreshes only when:
+**A 1 ms RTC wakeup interrupt increments a software timer.
+The OLED refreshes only when:**
 
 ```c
 hi2c1.hdmatx->State == HAL_DMA_STATE_READY
@@ -135,7 +135,7 @@ uint32_t pressure = 0;
 These are updated exclusively by BLE events.
 ```
 #📤 BLE Client Payload Format
-The BLE client sends:
+**The BLE client sends:**
 
 ````c
 uint8_t payload[6];
@@ -146,7 +146,7 @@ payload[3] = pressure >> 8;
 payload[4] = pressure >> 16;
 payload[5] = pressure >> 24;
 ````
-Transmission:
+**Transmission:**
 ````c
 aci_gatt_write_without_resp(connHandle, charHandle, 6, payload);
 ````
