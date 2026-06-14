@@ -26,13 +26,15 @@ The server exposes a Peer-to-Peer (P2P) Service with two characteristics:
 
 **Payload format:**
 
-Byte	Meaning
-0	Device ID
-1	Temperature (°C)
-2	Pressure LSB
-3	Pressure
-4	Pressure
-5	Pressure MSB
+| Byte | Meaning           |
+|------|-------------------|
+| 0    | Device ID         |
+| 1    | Temperature (°C)  |
+| 2    | Pressure LSB      |
+| 3    | Pressure          |
+| 4    | Pressure          |
+| 5    | Pressure MSB      |
+
 
 
 
