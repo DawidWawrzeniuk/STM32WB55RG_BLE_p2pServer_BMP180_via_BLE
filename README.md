@@ -59,22 +59,19 @@ Length: 2 bytes
 
 Used to send button/LED status back to the client.
 
-#📥 BLE Data Handling (p2p_server_app.c)
+# 📥 BLE Data Handling (p2p_server_app.c)
 Incoming BLE writes are processed inside:
 
-c
+```c
 case P2PS_STM_WRITE_EVT:
+```
 The server:
+1.Logs raw bytes
+2.Validates payload length
+3.Extracts temperature
+4.Extracts pressure (if available)
+5.Updates global variables
 
-Logs raw bytes
-
-Validates payload length
-
-Extracts temperature
-
-Extracts pressure (if available)
-
-Updates global variables
 
 Example logging:
 ````c
