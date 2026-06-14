@@ -160,8 +160,45 @@ aci_gatt_write_without_resp(connHandle, charHandle, 6, payload);
 
 
 
+# 🧩 Hardware Requirements
+* STM32WB55 (e.g., Nucleo-WB55RG)
 
+* SSD1306 OLED (I2C)
 
+* BMP180 sensor (on client side)
+
+* ST-Link V3
+
+* 3.3V power supply
+
+# 🛠 Software Requirements
+* STM32CubeIDE 1.15+
+
+* STM32CubeWB Firmware Package
+
+* BLE Stack: stm32wb5x_BLE_Stack_fw.bin
+
+* OLED + GFX libraries
+
+# 🚀 How to Run
+* Flash BLE stack to CPU2 (if not already installed)
+
+* Flash server firmware to STM32WB55
+
+* Flash client firmware to second STM32WB55
+
+* Power both devices
+
+* Press the switch 1 two times on client board
+
+* BLE connects automatically 
+
+**Server OLED displays:**
+
+````
+Temperature: XX C
+Pressure: XXXX hPa
+````
 
 
 
