@@ -1,4 +1,4 @@
-##STM32WB55 BLE P2P Server — Temperature & Pressure Display
+STM32WB55 BLE P2P Server — Temperature & Pressure Display
 This project implements a Bluetooth Low Energy (BLE) GATT Server running on the STM32WB55 microcontroller.
 The server receives environmental data (temperature + pressure) from a BLE client device and displays it on an SSD1306 OLED screen.
 
