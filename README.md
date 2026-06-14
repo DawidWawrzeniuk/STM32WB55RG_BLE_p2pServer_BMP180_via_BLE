@@ -4,13 +4,13 @@ The server receives environmental data (temperature + pressure) from a BLE clien
 
 The project is based on the official P2P Server example from STMicroelectronics and extends it with:
 
-*custom 6‑byte BLE payload decoding
+* custom 6‑byte BLE payload decoding
 
-*temperature & pressure handling
+* temperature & pressure handling
 
-*OLED rendering
+* OLED rendering
 
-*BMP180 sensor integration on the client side
+* BMP180 sensor integration on the client side
 
 
 
