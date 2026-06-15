@@ -887,7 +887,7 @@ void GFX_ImageRotate(int x, int y, const uint8_t *img, uint8_t w, uint8_t h, uin
 
 #endif /* GFX_BW_H_ */
 ````
-##📡 4. BLE Application — STM32WB55
+## 📡 4. BLE Application — STM32WB55
 **The project uses the STM32WB wireless coprocessor.
 Initialization follows ST’s standard BLE template:**
 
