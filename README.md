@@ -12,14 +12,14 @@ The codebase is divided into several functional modules described below.**
 This file defines a compact 8×5 bitmap font used for rendering text on the OLED.
 The first two bytes specify the font dimensions:
 ````
-“8, 5 // height, width”
+8, 5 // height, width
 ````
 Each character is stored as 5 bytes representing vertical pixel columns.
 
 **fonts.h**
 This file selects which font is compiled into the project:
 ````
-“#define FONT_8x5 1”
+#define FONT_8x5 1
 ````
 It automatically includes the correct font header.
 
@@ -174,19 +174,19 @@ It provides:**
 
 **The engine uses SSD1306 as the backend:**
 ````
-“#define GFX_DrawPixel(x,y,color) SSD1306_DrawPixel(x,y,color)”
+#define GFX_DrawPixel(x,y,color) SSD1306_DrawPixel(x,y,color)
 ````
 **Text Rendering**
 Characters are drawn column‑by‑column:
 ````
-“uint8_t line = font[(chr-0x20) * font[1] + i + 2];”
+uint8_t line = font[(chr-0x20) * font[1] + i + 2];
 ````
 Scaling is supported via GFX_SetFontSize().
 
 **Bitmap Rendering**
 Bitmaps are drawn using 1‑bit packed data:
 ````
-“if(img[j * byteWidth + i/8] & (128 >> (i&7))) GFX_DrawPixel(...)”
+if(img[j * byteWidth + i/8] & (128 >> (i&7))) GFX_DrawPixel(...)
 ````
 Rotation support exists but is disabled (USING_IMAGE_ROTATE 0).
 
@@ -887,6 +887,75 @@ void GFX_ImageRotate(int x, int y, const uint8_t *img, uint8_t w, uint8_t h, uin
 
 #endif /* GFX_BW_H_ */
 ````
+##📡 4. BLE Application — STM32WB55
+**The project uses the STM32WB wireless coprocessor.
+Initialization follows ST’s standard BLE template:**
+
+* MX_APPE_Config()
+
+* MX_APPE_Init()
+
+* MX_APPE_Process()
+
+**The BLE stack must be flashed separately as noted in the header comment.**
+
+##🌡 5. Main Application Logic — main.c
+The main loop updates the OLED with temperature and pressure values received from BLE.
+
+**Display Initialization**
+A splash screen is shown:
+````
+SSD1306_Bitmap((uint8_t*)picture);
+````
+Then the font is configured:
+````
+GFX_SetFont(font_8x5);
+GFX_SetFontSize(1);
+````
+**Periodic Update**
+Every frame, the display is cleared and redrawn:
+
+````c
+SSD1306_Clear(BLACK);
+
+sprintf(txt_temp, "TEMP: %d C", temp);
+GFX_DrawString(10, 10, txt_temp, WHITE, BLACK);
+
+sprintf(txt_press, "PRES: %lu hPa", pressure / 100);
+GFX_DrawString(10, 20, txt_press, WHITE, BLACK);
+
+SSD1306_Display();
+````
+The variables temp and pressure are updated externally (e.g., via BLE notifications).
+
+**DMA Optimization**
+The screen is updated only when the I2C DMA channel is idle:
+````
+if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
+````
+This prevents tearing and ensures smooth refresh.
+
+##🧩 6. Hardware & Peripheral Setup
+**The project configures:**
+
+* I2C1 for OLED
+
+* DMA for I2C and UART
+
+* RNG
+
+* RTC
+
+* RF subsystem
+
+* GPIO
+
+Clock configuration uses HSE as SYSCLK:
+````
+RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+````
+
+
 **main.c**:
 ````c
 /* USER CODE BEGIN Header */
@@ -1541,6 +1610,22 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 ````
+##🖥 3. OLED Driver — OLED_SSD1306
+**The graphics engine relies on the SSD1306 driver for:**
+
+* I2C communication
+
+* screen buffer management
+
+* DMA‑based transfers
+
+* display refresh (SSD1306_Display())
+
+**The display is initialized in main.c:**
+````
+SSD1306_I2cInit(&hi2c1);
+````
+
 **OLED_SSD1306.c**:
 ````c
 /* USER CODE BEGIN Header */
