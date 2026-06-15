@@ -3425,7 +3425,7 @@ void P2PS_Send_Notification(void)
 
 /* USER CODE END FD_LOCAL_FUNCTIONS*/
 ````
-# The server should know how many bytes it will receive - we change the characteristics:
+# The server should know how many bytes it will receive - we change the characteristics in p2p_stm.c file:
 ````c
 /**
      *  Add LED Characteristic
