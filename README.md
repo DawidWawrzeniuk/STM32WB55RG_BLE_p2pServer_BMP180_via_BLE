@@ -1610,7 +1610,7 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 ````
-##🖥 3. OLED Driver — OLED_SSD1306
+## 🖥 3. OLED Driver — OLED_SSD1306
 **The graphics engine relies on the SSD1306 driver for:**
 
 * I2C communication
