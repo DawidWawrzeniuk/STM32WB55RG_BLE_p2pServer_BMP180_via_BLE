@@ -154,6 +154,43 @@ const uint8_t font_8x5[] =
 #endif /* FONTS_FONTS_H_ */
 ````
 
+$$ 🎨 2. Graphics Engine — GFX_BW.c / GFX_BW.h
+**This is a lightweight graphics library for monochrome displays.
+It provides:**
+
+* pixel drawing
+
+* lines (Bresenham)
+
+* rectangles (filled & unfilled)
+
+* circles and rounded rectangles
+
+* triangles (filled & unfilled)
+
+* bitmap rendering
+
+* text rendering with scalable font size
+
+**The engine uses SSD1306 as the backend:**
+````
+“#define GFX_DrawPixel(x,y,color) SSD1306_DrawPixel(x,y,color)”
+````
+**Text Rendering**
+Characters are drawn column‑by‑column:
+````
+“uint8_t line = font[(chr-0x20) * font[1] + i + 2];”
+````
+Scaling is supported via GFX_SetFontSize().
+
+**Bitmap Rendering**
+Bitmaps are drawn using 1‑bit packed data:
+````
+“if(img[j * byteWidth + i/8] & (128 >> (i&7))) GFX_DrawPixel(...)”
+````
+Rotation support exists but is disabled (USING_IMAGE_ROTATE 0).
+
+
 
 **GFX_BW.c**:
 ````c
