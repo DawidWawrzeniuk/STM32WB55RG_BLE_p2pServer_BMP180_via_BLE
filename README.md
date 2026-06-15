@@ -1,11 +1,4 @@
 # STM32WB55 BLE P2P Server — Temperature & Pressure Display
-
-
-
-
-
-
-
 <p align="center">
 <img width="301" height="521" alt="image" src="https://github.com/user-attachments/assets/14047ba0-0abe-4f75-8842-fe0846264eb4" />
 </p>
