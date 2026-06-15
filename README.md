@@ -11,7 +11,8 @@ The codebase is divided into several functional modules described below.**
 <p align="center">
 <img width="501" height="656" alt="image" src="https://github.com/user-attachments/assets/e2455002-1e72-409f-afdf-cfc3d4eaa546" />
 </p>
-## Configuration of :
+
+## Configuration of DMA:
 <p align="center">
 <img width="752" height="965" alt="image" src="https://github.com/user-attachments/assets/b17e5533-6b4a-43b6-95cb-7db42ad48cae" />
 </p>
