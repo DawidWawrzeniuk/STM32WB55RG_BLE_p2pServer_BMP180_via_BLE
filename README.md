@@ -1,10 +1,28 @@
 # STM32WB55 BLE P2P Server — Temperature & Pressure Display
-## 📘 Source Code Overview
 **This project implements a BLE P2P Server on the STM32WB55 and displays temperature and pressure values on an SSD1306 OLED using a custom monochrome graphics engine.
 The codebase is divided into several functional modules described below.**
+## 📘 Source Code Overview
+
 <p align="center">
 <img width="301" height="521" alt="image" src="https://github.com/user-attachments/assets/14047ba0-0abe-4f75-8842-fe0846264eb4" />
 </p>
+
+## 🖼 1. Font System — font_8x5.h & fonts.h
+**font_8x5.h**
+This file defines a compact 8×5 bitmap font used for rendering text on the OLED.
+The first two bytes specify the font dimensions:
+````
+“8, 5 // height, width”
+````
+Each character is stored as 5 bytes representing vertical pixel columns.
+
+**fonts.h**
+This file selects which font is compiled into the project:
+````
+“#define FONT_8x5 1”
+````
+It automatically includes the correct font header.
+
 
 **font_8x5.h**:
 ````c
