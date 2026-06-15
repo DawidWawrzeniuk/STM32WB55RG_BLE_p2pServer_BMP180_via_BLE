@@ -154,7 +154,7 @@ const uint8_t font_8x5[] =
 #endif /* FONTS_FONTS_H_ */
 ````
 
-$$ 🎨 2. Graphics Engine — GFX_BW.c / GFX_BW.h
+## 🎨 2. Graphics Engine — GFX_BW.c / GFX_BW.h
 **This is a lightweight graphics library for monochrome displays.
 It provides:**
 
