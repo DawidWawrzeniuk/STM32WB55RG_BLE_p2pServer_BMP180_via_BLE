@@ -3425,7 +3425,36 @@ void P2PS_Send_Notification(void)
 
 /* USER CODE END FD_LOCAL_FUNCTIONS*/
 ````
+**The server should know how many bytes it will receive - we change the characteristics: **
+````c
+/**
+     *  Add LED Characteristic
+     */
+    COPY_P2P_WRITE_CHAR_UUID(uuid16.Char_UUID_128);
+    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+                      UUID_TYPE_128, &uuid16,
+                      6,	<-------the change from default 2 to 6
+                      CHAR_PROP_WRITE_WITHOUT_RESP|CHAR_PROP_READ,
+                      ATTR_PERMISSION_NONE,
+                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+                      10, /* encryKeySize */
+                      1, /* isVariable */
+                      &(aPeerToPeerContext.P2PWriteClientToServerCharHdle));
 
+    /**
+     *   Add Button Characteristic
+     */
+    COPY_P2P_NOTIFY_UUID(uuid16.Char_UUID_128);
+    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+                      UUID_TYPE_128, &uuid16,
+                      6,	<-------the change from default 2 to 6
+                      CHAR_PROP_NOTIFY,
+                      ATTR_PERMISSION_NONE,
+                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+                      10, /* encryKeySize */
+                      1, /* isVariable: 1 */
+                      &(aPeerToPeerContext.P2PNotifyServerToClientCharHdle));
+ ````
 **p2p_stm.c**:
 ````c
 /**
