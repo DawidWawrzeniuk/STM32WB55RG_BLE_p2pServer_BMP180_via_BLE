@@ -1,5 +1,5 @@
 # STM32WB55 BLE P2P Server — Temperature & Pressure Display
-**font_8x5.h**
+**font_8x5.h**:
 ````c
 #ifndef FONT_8X5_H_
 #define FONT_8X5_H_
@@ -109,7 +109,7 @@ const uint8_t font_8x5[] =
 
 ````
 
-*fonts.h**
+**fonts.h**:
 ````c
 #ifndef FONTS_FONTS_H_
 #define FONTS_FONTS_H_
@@ -130,7 +130,7 @@ const uint8_t font_8x5[] =
 ````
 
 
-**GFX_BW.c**
+**GFX_BW.c**:
 ````c
 
 #include "main.h"
@@ -705,6 +705,2047 @@ void GFX_ImageRotate(int x, int y, const uint8_t *img, uint8_t w, uint8_t h, uin
 #endif
 #endif
 ````
+**GFX_BW.h**:
+````c
+
+
+#ifndef GFX_BW_H_
+#define GFX_BW_H_
+
+/***************************************************************
+ *
+ * 		SETTINGS
+ *
+ * 		Please set what functionality you want to use.
+ * 		Some functions need other functionalities. It should works automatically.
+ *
+ * 		1 - will be compiled
+ * 		0 - won't be compiled
+ *
+ * */
+#define AVR_USING 0
+#define STM32_USING 1
+
+#define GFX_DrawPixel(x,y,color) SSD1306_DrawPixel(x,y,color)
+#define WIDTH SSD1306_LCDWIDTH
+#define HEIGHT SSD1306_LCDHEIGHT
+#define PIXEL_BLACK	BLACK
+#define PIXEL_WHITE	WHITE
+#define PIXEL_INVERSE	INVERSE
+
+#define USING_STRINGS 1 // 0 - do not compile, 1 - compile
+
+#define USING_IMAGE 1
+#if USING_IMAGE == 1
+#define USING_IMAGE_ROTATE 0
+#endif
+
+// Trygonometric graphic functions
+#define USING_RECTANGLE 1
+#define USING_CIRCLE 1
+#define USING_FILL_CIRCLE 1
+#define USING_ROUND_RECTANGLE 1
+#define USING_FILL_ROUND_RECTANGLE 1
+#define USING_TRIANGLE 1
+#define USING_FILL_TRIANGLE 1
+#if ((USING_FILL_ROUND_RECTANGLE == 0) && (USING_STRINGS == 0))
+#define USING_FILL_RECTANGLE 0
+#endif
+#if (USING_RECTANGLE == 0) && (USING_FILL_RECTANGLE == 0) && (USING_FILL_CIRCLE == 0) && (USING_ROUND_RECTANGLE == 0) && (USING_TRIANGLE == 0) && (USING_FILL_TRIANGLE == 0)
+#define USING_LINES 0
+#endif
+
+/****************************************************************/
+
+#if (USING_FILL_ROUND_RECTANGLE == 1 || USING_STRINGS == 1)
+#define USING_FILL_RECTANGLE 1
+#endif
+#if (USING_RECTANGLE == 1) || (USING_FILL_RECTANGLE == 1) || (USING_FILL_CIRCLE == 1) || (USING_ROUND_RECTANGLE == 1) || (USING_TRIANGLE == 1) || (USING_FILL_TRIANGLE == 1)
+#define USING_LINES 1
+#endif
+#if USING_ROUND_RECTANGLE == 1
+#define CIRCLE_HELPER
+#endif
+#if (USING_FILL_CIRCLE == 1) || (USING_FILL_ROUND_RECTANGLE == 1)
+#define FILL_CIRCLE_HELPER
+#endif
+
+#if USING_STRINGS == 1
+/*
+ *
+ */
+void GFX_SetFont(const uint8_t* font_t);
+void GFX_SetFontSize(uint8_t size_t);
+uint8_t GFX_GetFontHeight(void);
+uint8_t GFX_GetFontWidth(void);
+uint8_t  GFX_GetFontSize(void);
+void GFX_DrawChar(int x, int y, char chr, uint8_t color, uint8_t background);
+void GFX_DrawString(int x, int y, char* str, uint8_t color, uint8_t background);
+#endif
+
+#if USING_LINES == 1
+void GFX_DrawLine(int x_start, int y_start, int x_end, int y_end, uint8_t color);
+#endif
+
+#if USING_RECTANGLE == 1
+void GFX_DrawRectangle(int x, int y, uint16_t w, uint16_t h, uint8_t color);
+#endif
+#if USING_FILL_RECTANGLE ==1
+void GFX_DrawFillRectangle(int x, int y, uint16_t w, uint16_t h, uint8_t color);
+#endif
+#if USING_CIRCLE == 1
+void GFX_DrawCircle(int x0, int y0, uint16_t r, uint8_t color);
+#endif
+#if USING_FILL_CIRCLE == 1
+void GFX_DrawFillCircle(int x0, int y0, uint16_t r, uint8_t color);
+#endif
+#if USING_ROUND_RECTANGLE == 1
+void GFX_DrawRoundRectangle(int x, int y, uint16_t w, uint16_t h, uint16_t r, uint8_t color);
+#endif
+#if USING_FILL_ROUND_RECTANGLE == 1
+void GFX_DrawFillRoundRectangle(int x, int y, uint16_t w, uint16_t h, uint16_t r, uint8_t color);
+#endif
+#if USING_TRIANGLE == 1
+void GFX_DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, uint8_t color);
+#endif
+#if USING_FILL_TRIANGLE == 1
+void GFX_DrawFillTriangle(int x0, int y0, int x1, int y1, int x2, int y2, uint8_t color);
+#endif
+#if USING_IMAGE == 1
+#if AVR_USING ==1
+void GFX_Image_P(int x, int y, uint8_t *img, uint8_t w, uint8_t h, uint8_t color);
+#endif
+#if STM32_USING ==1
+void GFX_Image(int x, int y, const uint8_t *img, uint8_t w, uint8_t h, uint8_t color);
+#if USING_IMAGE_ROTATE == 1
+void GFX_ImageRotate(int x, int y, const uint8_t *img, uint8_t w, uint8_t h, uint8_t color, uint16_t angle);
+#endif
+#endif
+#endif
+
+#endif /* GFX_BW_H_ */
+````
+**main.c**:
+````c
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+ * @file    main.c
+ * @author  MCD Application Team
+ * @brief   BLE application with BLE core
+ *
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2019-2021 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  @verbatim
+  ==============================================================================
+                    ##### IMPORTANT NOTE #####
+  ==============================================================================
+
+  This application requests having the stm32wb5x_BLE_Stack_fw.bin binary
+  flashed on the Wireless Coprocessor.
+  If it is not the case, you need to use STM32CubeProgrammer to load the appropriate
+  binary.
+
+  All available binaries are located under following directory:
+  /Projects/STM32_Copro_Wireless_Binaries
+
+  Refer to UM2237 to learn how to use/install STM32CubeProgrammer.
+  Refer to /Projects/STM32_Copro_Wireless_Binaries/ReleaseNote.html for the
+  detailed procedure to change the Wireless Coprocessor binary.
+
+  @endverbatim
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+#include "OLED_SSD1306.h"
+#include "GFX_BW.h"
+#include "fonts.h"
+#include "picture.h"
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_tx;
+
+IPCC_HandleTypeDef hipcc;
+
+UART_HandleTypeDef hlpuart1;
+UART_HandleTypeDef huart1;
+DMA_HandleTypeDef hdma_lpuart1_tx;
+DMA_HandleTypeDef hdma_usart1_tx;
+
+RNG_HandleTypeDef hrng;
+
+RTC_HandleTypeDef hrtc;
+
+/* USER CODE BEGIN PV */
+volatile uint16_t timer_1s;
+extern uint8_t temp;
+extern uint32_t pressure;
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_RTC_Init(void);
+static void MX_IPCC_Init(void);
+static void MX_RNG_Init(void);
+static void MX_I2C1_Init(void);
+static void MX_RF_Init(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+  /* Config code for STM32_WPAN (HSE Tuning must be done before system clock configuration) */
+  MX_APPE_Config();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* Configure the peripherals common clocks */
+  PeriphCommonClock_Config();
+
+  /* IPCC initialisation */
+  MX_IPCC_Init();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_RTC_Init();
+  MX_RNG_Init();
+  MX_I2C1_Init();
+  MX_RF_Init();
+  /* USER CODE BEGIN 2 */
+  MX_DMA_Init();
+  SSD1306_I2cInit(&hi2c1);
+
+
+
+
+
+  SSD1306_Bitmap((uint8_t*)picture);
+    HAL_Delay(5000);
+    GFX_SetFont(font_8x5);
+    GFX_SetFontSize(1);
+
+    uint16_t frames = 0, fps = 0;
+    uint32_t loops = 0, loops_overal = 0;
+    char fps_c[20];
+
+
+
+
+
+  /* USER CODE END 2 */
+
+  /* Init code for STM32_WPAN */
+  MX_APPE_Init();
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+	while(1)
+	{
+		 if(!timer_1s)
+			  	{
+			  		  timer_1s = 1000;
+			  		  fps = frames;
+			  		  frames = 0;
+			  		  loops_overal = loops;
+			  		  loops = 0;
+			  	}
+
+			  if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
+			  	{
+				  SSD1306_Clear(BLACK);
+
+				      // TEMPERATURA
+				      char txt_temp[20];
+				      sprintf(txt_temp, "TEMP: %d C", temp);
+				      GFX_DrawString(10,10, txt_temp, WHITE, BLACK);
+
+				      // CISNIENIE
+				      char txt_press[20];
+				      sprintf(txt_press, "PRES: %lu hPa", pressure / 100);
+				      GFX_DrawString(10,20, txt_press, WHITE, BLACK);
+
+
+				      SSD1306_Display();   // aktualizacja ekranu
+
+				      loops++;
+			  	}
+			    HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, 0);
+			    loops++;
+
+
+
+
+
+
+
+
+
+
+
+    /* USER CODE END WHILE */
+    MX_APPE_Process();
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure LSE Drive Capability
+  */
+  HAL_PWR_EnableBkUpAccess();
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
+
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSI
+                              |RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure the SYSCLKSource, HCLK, PCLK1 and PCLK2 clocks dividers
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK4|RCC_CLOCKTYPE_HCLK2
+                              |RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLK2Divider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLK4Divider = RCC_SYSCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+  /** Initializes the peripherals clock
+  */
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP;
+  PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSE;
+  PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSE;
+  PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE1;
+
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN Smps */
+
+  /* USER CODE END Smps */
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.Timing = 0x00B07CB4;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief IPCC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IPCC_Init(void)
+{
+
+  /* USER CODE BEGIN IPCC_Init 0 */
+
+  /* USER CODE END IPCC_Init 0 */
+
+  /* USER CODE BEGIN IPCC_Init 1 */
+
+  /* USER CODE END IPCC_Init 1 */
+  hipcc.Instance = IPCC;
+  if (HAL_IPCC_Init(&hipcc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN IPCC_Init 2 */
+
+  /* USER CODE END IPCC_Init 2 */
+
+}
+
+/**
+  * @brief LPUART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_LPUART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN LPUART1_Init 0 */
+
+  /* USER CODE END LPUART1_Init 0 */
+
+  /* USER CODE BEGIN LPUART1_Init 1 */
+
+  /* USER CODE END LPUART1_Init 1 */
+  hlpuart1.Instance = LPUART1;
+  hlpuart1.Init.BaudRate = 115200;
+  hlpuart1.Init.WordLength = UART_WORDLENGTH_8B;
+  hlpuart1.Init.StopBits = UART_STOPBITS_1;
+  hlpuart1.Init.Parity = UART_PARITY_NONE;
+  hlpuart1.Init.Mode = UART_MODE_TX_RX;
+  hlpuart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  hlpuart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  hlpuart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  hlpuart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  hlpuart1.FifoMode = UART_FIFOMODE_DISABLE;
+  if (HAL_UART_Init(&hlpuart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&hlpuart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&hlpuart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&hlpuart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN LPUART1_Init 2 */
+
+  /* USER CODE END LPUART1_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_8;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
+  * @brief RF Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RF_Init(void)
+{
+
+  /* USER CODE BEGIN RF_Init 0 */
+
+  /* USER CODE END RF_Init 0 */
+
+  /* USER CODE BEGIN RF_Init 1 */
+
+  /* USER CODE END RF_Init 1 */
+  /* USER CODE BEGIN RF_Init 2 */
+
+  /* USER CODE END RF_Init 2 */
+
+}
+
+/**
+  * @brief RNG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RNG_Init(void)
+{
+
+  /* USER CODE BEGIN RNG_Init 0 */
+
+  /* USER CODE END RNG_Init 0 */
+
+  /* USER CODE BEGIN RNG_Init 1 */
+
+  /* USER CODE END RNG_Init 1 */
+  hrng.Instance = RNG;
+  hrng.Init.ClockErrorDetection = RNG_CED_ENABLE;
+  if (HAL_RNG_Init(&hrng) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RNG_Init 2 */
+
+  /* USER CODE END RNG_Init 2 */
+
+}
+
+/**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
+
+  /* USER CODE BEGIN RTC_Init 0 */
+
+  /* USER CODE END RTC_Init 0 */
+
+  /* USER CODE BEGIN RTC_Init 1 */
+
+  /* USER CODE END RTC_Init 1 */
+
+  /** Initialize RTC Only
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
+  hrtc.Init.SynchPrediv = CFG_RTC_SYNCH_PRESCALER;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Enable the WakeUp
+  */
+  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
+
+  /* USER CODE END RTC_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMAMUX1_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+  /* DMA2_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Channel4_IRQn, 15, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Channel4_IRQn);
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : TEST_Pin */
+  GPIO_InitStruct.Pin = TEST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(TEST_GPIO_Port, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
+}
+
+/* USER CODE BEGIN 4 */
+
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+
+  /* USER CODE END Error_Handler_Debug */
+}
+#ifdef USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */
+````
+**OLED_SSD1306.c**:
+````c
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+ * @file    main.c
+ * @author  MCD Application Team
+ * @brief   BLE application with BLE core
+ *
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2019-2021 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  @verbatim
+  ==============================================================================
+                    ##### IMPORTANT NOTE #####
+  ==============================================================================
+
+  This application requests having the stm32wb5x_BLE_Stack_fw.bin binary
+  flashed on the Wireless Coprocessor.
+  If it is not the case, you need to use STM32CubeProgrammer to load the appropriate
+  binary.
+
+  All available binaries are located under following directory:
+  /Projects/STM32_Copro_Wireless_Binaries
+
+  Refer to UM2237 to learn how to use/install STM32CubeProgrammer.
+  Refer to /Projects/STM32_Copro_Wireless_Binaries/ReleaseNote.html for the
+  detailed procedure to change the Wireless Coprocessor binary.
+
+  @endverbatim
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+#include "OLED_SSD1306.h"
+#include "GFX_BW.h"
+#include "fonts.h"
+#include "picture.h"
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_tx;
+
+IPCC_HandleTypeDef hipcc;
+
+UART_HandleTypeDef hlpuart1;
+UART_HandleTypeDef huart1;
+DMA_HandleTypeDef hdma_lpuart1_tx;
+DMA_HandleTypeDef hdma_usart1_tx;
+
+RNG_HandleTypeDef hrng;
+
+RTC_HandleTypeDef hrtc;
+
+/* USER CODE BEGIN PV */
+volatile uint16_t timer_1s;
+extern uint8_t temp;
+extern uint32_t pressure;
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_RTC_Init(void);
+static void MX_IPCC_Init(void);
+static void MX_RNG_Init(void);
+static void MX_I2C1_Init(void);
+static void MX_RF_Init(void);
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+  /* Config code for STM32_WPAN (HSE Tuning must be done before system clock configuration) */
+  MX_APPE_Config();
+
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* Configure the peripherals common clocks */
+  PeriphCommonClock_Config();
+
+  /* IPCC initialisation */
+  MX_IPCC_Init();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_RTC_Init();
+  MX_RNG_Init();
+  MX_I2C1_Init();
+  MX_RF_Init();
+  /* USER CODE BEGIN 2 */
+  MX_DMA_Init();
+  SSD1306_I2cInit(&hi2c1);
+
+
+
+
+
+  SSD1306_Bitmap((uint8_t*)picture);
+    HAL_Delay(5000);
+    GFX_SetFont(font_8x5);
+    GFX_SetFontSize(1);
+
+    uint16_t frames = 0, fps = 0;
+    uint32_t loops = 0, loops_overal = 0;
+    char fps_c[20];
+
+
+
+
+
+  /* USER CODE END 2 */
+
+  /* Init code for STM32_WPAN */
+  MX_APPE_Init();
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+	while(1)
+	{
+		 if(!timer_1s)
+			  	{
+			  		  timer_1s = 1000;
+			  		  fps = frames;
+			  		  frames = 0;
+			  		  loops_overal = loops;
+			  		  loops = 0;
+			  	}
+
+			  if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
+			  	{
+				  SSD1306_Clear(BLACK);
+
+				      // TEMPERATURA
+				      char txt_temp[20];
+				      sprintf(txt_temp, "TEMP: %d C", temp);
+				      GFX_DrawString(10,10, txt_temp, WHITE, BLACK);
+
+				      // CISNIENIE
+				      char txt_press[20];
+				      sprintf(txt_press, "PRES: %lu hPa", pressure / 100);
+				      GFX_DrawString(10,20, txt_press, WHITE, BLACK);
+
+
+				      SSD1306_Display();   // aktualizacja ekranu
+
+				      loops++;
+			  	}
+			    HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, 0);
+			    loops++;
+
+
+
+
+
+
+
+
+
+
+
+    /* USER CODE END WHILE */
+    MX_APPE_Process();
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure LSE Drive Capability
+  */
+  HAL_PWR_EnableBkUpAccess();
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
+
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSI
+                              |RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure the SYSCLKSource, HCLK, PCLK1 and PCLK2 clocks dividers
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK4|RCC_CLOCKTYPE_HCLK2
+                              |RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLK2Divider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLK4Divider = RCC_SYSCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+  /** Initializes the peripherals clock
+  */
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP;
+  PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSE;
+  PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSE;
+  PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE1;
+
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN Smps */
+
+  /* USER CODE END Smps */
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.Timing = 0x00B07CB4;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief IPCC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IPCC_Init(void)
+{
+
+  /* USER CODE BEGIN IPCC_Init 0 */
+
+  /* USER CODE END IPCC_Init 0 */
+
+  /* USER CODE BEGIN IPCC_Init 1 */
+
+  /* USER CODE END IPCC_Init 1 */
+  hipcc.Instance = IPCC;
+  if (HAL_IPCC_Init(&hipcc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN IPCC_Init 2 */
+
+  /* USER CODE END IPCC_Init 2 */
+
+}
+
+/**
+  * @brief LPUART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_LPUART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN LPUART1_Init 0 */
+
+  /* USER CODE END LPUART1_Init 0 */
+
+  /* USER CODE BEGIN LPUART1_Init 1 */
+
+  /* USER CODE END LPUART1_Init 1 */
+  hlpuart1.Instance = LPUART1;
+  hlpuart1.Init.BaudRate = 115200;
+  hlpuart1.Init.WordLength = UART_WORDLENGTH_8B;
+  hlpuart1.Init.StopBits = UART_STOPBITS_1;
+  hlpuart1.Init.Parity = UART_PARITY_NONE;
+  hlpuart1.Init.Mode = UART_MODE_TX_RX;
+  hlpuart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  hlpuart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  hlpuart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  hlpuart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  hlpuart1.FifoMode = UART_FIFOMODE_DISABLE;
+  if (HAL_UART_Init(&hlpuart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&hlpuart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&hlpuart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&hlpuart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN LPUART1_Init 2 */
+
+  /* USER CODE END LPUART1_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_8;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
+  * @brief RF Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RF_Init(void)
+{
+
+  /* USER CODE BEGIN RF_Init 0 */
+
+  /* USER CODE END RF_Init 0 */
+
+  /* USER CODE BEGIN RF_Init 1 */
+
+  /* USER CODE END RF_Init 1 */
+  /* USER CODE BEGIN RF_Init 2 */
+
+  /* USER CODE END RF_Init 2 */
+
+}
+
+/**
+  * @brief RNG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RNG_Init(void)
+{
+
+  /* USER CODE BEGIN RNG_Init 0 */
+
+  /* USER CODE END RNG_Init 0 */
+
+  /* USER CODE BEGIN RNG_Init 1 */
+
+  /* USER CODE END RNG_Init 1 */
+  hrng.Instance = RNG;
+  hrng.Init.ClockErrorDetection = RNG_CED_ENABLE;
+  if (HAL_RNG_Init(&hrng) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RNG_Init 2 */
+
+  /* USER CODE END RNG_Init 2 */
+
+}
+
+/**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
+
+  /* USER CODE BEGIN RTC_Init 0 */
+
+  /* USER CODE END RTC_Init 0 */
+
+  /* USER CODE BEGIN RTC_Init 1 */
+
+  /* USER CODE END RTC_Init 1 */
+
+  /** Initialize RTC Only
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
+  hrtc.Init.SynchPrediv = CFG_RTC_SYNCH_PRESCALER;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Enable the WakeUp
+  */
+  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
+
+  /* USER CODE END RTC_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMAMUX1_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+  /* DMA2_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Channel4_IRQn, 15, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Channel4_IRQn);
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : TEST_Pin */
+  GPIO_InitStruct.Pin = TEST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(TEST_GPIO_Port, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
+}
+
+/* USER CODE BEGIN 4 */
+
+/* USER CODE END 4 */
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+
+  /* USER CODE END Error_Handler_Debug */
+}
+#ifdef USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */
+````
+
+**OLED_SSD1306.h**:
+````c
+
+#ifndef OLED_SSD1306_H_
+#define OLED_SSD1306_H_
+
+/*
+ *
+ *    SETTINGS
+ *
+ *    Please set only one interface. It won't work with both one time.
+ *
+ */
+//#define SSD1306_SPI_CONTROL
+#define SSD1306_I2C_CONTROL
+
+#ifdef SSD1306_I2C_CONTROL
+//#define SSD1306_I2C_DMA_ENABLE
+#define SSD1306_I2C_ADDRESS (0x3C << 1)
+#endif
+#ifdef SSD1306_SPI_CONTROL
+#define SSD1306_RESET_USE
+#define SSD1306_SPI_DMA_ENABLE
+#define SPI_CS_HARDWARE_CONTROL
+#endif
+
+//
+// Resolution
+//
+#define SSD1306_LCDWIDTH                  128
+#define SSD1306_LCDHEIGHT                 64
+
+/*
+ * 		Please set what functionality you want to use.
+ * 		Some functions need other functionalities. It should works automatically.
+ *
+ * 		1 - will be compiled
+ * 		0 - won't be compiled
+ */
+#define GRAPHIC_ACCELERATION_COMMANDS 1
+#define ADVANCED_GRAPHIC_COMMANDS 1
+
+/****************************************************************/
+
+//
+// Commands
+//
+#define SSD1306_SETCONTRAST 0x81
+#define SSD1306_DISPLAYALLON_RESUME 0xA4
+#define SSD1306_DISPLAYALLON 0xA5
+#define SSD1306_NORMALDISPLAY 0xA6
+#define SSD1306_INVERTDISPLAY 0xA7
+#define SSD1306_DISPLAYOFF 0xAE
+#define SSD1306_DISPLAYON 0xAF
+#define SSD1306_SETDISPLAYOFFSET 0xD3
+#define SSD1306_SETCOMPINS 0xDA
+#define SSD1306_SETVCOMDETECT 0xDB
+#define SSD1306_SETDISPLAYCLOCKDIV 0xD5
+#define SSD1306_SETPRECHARGE 0xD9
+#define SSD1306_SETMULTIPLEX 0xA8
+#define SSD1306_SETLOWCOLUMN 0x00
+#define SSD1306_SETHIGHCOLUMN 0x10
+#define SSD1306_SETSTARTLINE 0x40
+#define SSD1306_MEMORYMODE 0x20
+#define SSD1306_COLUMNADDR 0x21
+#define SSD1306_PAGEADDR   0x22
+#define SSD1306_COMSCANINC 0xC0
+#define SSD1306_COMSCANDEC 0xC8
+#define SSD1306_SEGREMAP 0xA0
+#define SSD1306_CHARGEPUMP 0x8D
+#define SSD1306_EXTERNALVCC 0x1
+#define SSD1306_SWITCHCAPVCC 0x2
+
+//
+// Scrolling #defines
+//
+#define SSD1306_ACTIVATE_SCROLL 0x2F
+#define SSD1306_DEACTIVATE_SCROLL 0x2E
+#define SSD1306_SET_VERTICAL_SCROLL_AREA 0xA3
+#define SSD1306_RIGHT_HORIZONTAL_SCROLL 0x26
+#define SSD1306_LEFT_HORIZONTAL_SCROLL 0x27
+#define SSD1306_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL 0x29
+#define SSD1306_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL 0x2A
+
+//
+// Advanced Graphic defines
+//
+#define SSD1306_FADE_OUT 0x23
+#define SSD1306_ZOOM_IN 0xD6
+
+//
+// Colors
+//
+#define BLACK 0
+#define WHITE 1
+#define INVERSE 2
+
+//
+// Scrolling enums
+//
+typedef enum
+{
+	SCROLL_EVERY_5_FRAMES,
+	SCROLL_EVERY_64_FRAMES,
+	SCROLL_EVERY_128_FRAMES,
+	SCROLL_EVERY_256_FRAMES,
+	SCROLL_EVERY_3_FRAMES,
+	SCROLL_EVERY_4_FRAMES,
+	SCROLL_EVERY_25_FRAMES,
+	SCROLL_EVERY_2_FRAMES,
+} scroll_horizontal_speed;
+//
+// Functions
+//
+#ifdef SSD1306_I2C_CONTROL
+void SSD1306_I2cInit(I2C_HandleTypeDef *i2c);
+#endif
+#ifdef SSD1306_SPI_CONTROL
+void SSD1306_SpiInit(SPI_HandleTypeDef *spi);
+#endif
+#if defined(SSD1306_SPI_CONTROL) && !defined(SSD1306_SPI_DMA_ENABLE)
+void SSD1306_DmaEndCallback(SPI_HandleTypeDef *hspi);
+#endif
+
+//
+// Configuration
+//
+void SSD1306_DisplayON(uint8_t On);
+void SSD1306_InvertColors(uint8_t Invert);
+void SSD1306_RotateDisplay(uint8_t Rotate);
+void SSD1306_SetContrast(uint8_t Contrast);
+
+//
+// Drawing
+//
+void SSD1306_DrawPixel(int16_t x, int16_t y, uint8_t Color);
+void SSD1306_Clear(uint8_t Color);
+void SSD1306_Display(void);
+void SSD1306_Bitmap(uint8_t *bitmap);
+
+#if GRAPHIC_ACCELERATION_COMMANDS == 1
+//
+// Graphic Acceleration Commands
+//
+void SSD1306_StartScrollRight(uint8_t StartPage, uint8_t EndPage, scroll_horizontal_speed Speed);
+void SSD1306_StartScrollLeft(uint8_t StartPage, uint8_t EndPage, scroll_horizontal_speed Speed);
+void SSD1306_StartScrollRightUp(uint8_t StartPage, uint8_t EndPage, scroll_horizontal_speed HorizontalSpeed, uint8_t VerticalOffset);
+void SSD1306_StartScrollLeftUp(uint8_t StartPage, uint8_t EndPage, scroll_horizontal_speed HorizontalSpeed, uint8_t VerticalOffset);
+void SSD1306_StopScroll(void);
+#endif
+
+#if ADVANCED_GRAPHIC_COMMANDS == 1
+//
+// Advanced Graphic Commands
+//
+void SSD1306_StartFadeOut(uint8_t Interval);
+void SSD1306_StartBlinking(uint8_t Interval);
+void SSD1306_StopFadeOutOrBlinking(void);
+void SSD1306_ZoomIn(uint8_t Zoom);
+#endif
+
+#endif /* OLED_SSD1306_H_ */
+````
+
+
+**picture.h**:
+````c
+
+const uint8_t picture[]  = {
+		// 'experience', 128x64px
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0x7f, 0xbf, 0xbf, 0x5f, 0x5f, 0x2f, 0x2f, 0x2f, 0x2f, 0x17, 0x17, 0x0b, 0x0b,
+		0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x17, 0x17, 0x27, 0x2f, 0x2f, 0x4f, 0x5f, 0x5f, 0x9f, 0x3f, 0x7f,
+		0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xbf, 0x7f, 0xbf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xbf, 0x7f, 0x9f, 0x5f, 0xaf, 0x0f, 0x87,
+		0x47, 0x87, 0x47, 0x8f, 0x5f, 0x9f, 0xdf, 0xdf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0x7f, 0x7f, 0x7f, 0xff, 0xff, 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x0f, 0x0f, 0x0f, 0x1f,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f, 0xbf, 0x5f, 0x2f, 0x17, 0x0b,
+		0x05, 0x05, 0x02, 0x49, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x80, 0xc0, 0xc0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01,
+		0x02, 0x04, 0x09, 0x13, 0x67, 0x8f, 0x3f, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xfe, 0xfd, 0xfe, 0xf7, 0xfb, 0xf7, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xff, 0x7f, 0x7f, 0x3f, 0x3f, 0x3f, 0x3f, 0x3f, 0x3e, 0x3f, 0x3e, 0x3f, 0x3e,
+		0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff, 0xfd, 0xfb, 0xf5, 0xfb, 0xf5, 0xeb, 0xf7, 0xeb, 0xf7, 0xeb,
+		0xf5, 0xea, 0xf5, 0xea, 0xf4, 0xe8, 0xd4, 0xe8, 0xd0, 0xe8, 0xc0, 0xc0, 0xe0, 0xd0, 0xe8, 0xd0,
+		0xdf, 0xaf, 0x57, 0x57, 0x4b, 0x4b, 0x45, 0x45, 0x42, 0xe2, 0x61, 0x30, 0x10, 0x08, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xa0, 0x30, 0x30, 0x38, 0x78, 0x7c, 0xfc, 0xfe, 0xfe,
+		0xff, 0xff, 0xff, 0x7f, 0x3f, 0xbf, 0xbf, 0x3e, 0x7c, 0x78, 0x70, 0xe0, 0xc0, 0x00, 0x02, 0x08,
+		0x22, 0x08, 0x22, 0x88, 0x20, 0x80, 0x21, 0x86, 0x18, 0x62, 0x8f, 0x3b, 0xff, 0xaa, 0xdf, 0xeb,
+		0x7f, 0xaa, 0xdf, 0xab, 0x5f, 0xaa, 0xdf, 0xab, 0x7f, 0xaa, 0xdf, 0x2b, 0x1f, 0x0a, 0xc7, 0xe3,
+		0xf1, 0xf8, 0xfc, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xfe, 0xfe, 0xfe, 0xfc, 0xfc, 0xf8, 0xf1, 0xe3, 0xc7, 0x0b, 0x1f, 0x2b, 0x7f, 0xab, 0xdf, 0xab,
+		0x7f, 0xab, 0xdf, 0xab, 0x5f, 0xab, 0xdf, 0xab, 0x7f, 0xab, 0xdf, 0xab, 0x7f, 0xab, 0xdf, 0xab,
+		0x95, 0xa3, 0x15, 0x0b, 0xc5, 0x23, 0x19, 0x04, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x80, 0x00, 0x00, 0xfa, 0xf3, 0xc3, 0xb3, 0xfb, 0xc3, 0x83, 0x03, 0x83, 0xf6, 0xef, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xde, 0xef, 0xe7, 0xf7, 0x07, 0x07, 0x07, 0x06, 0xf6, 0x25, 0x87, 0xc0, 0x00,
+		0x00, 0x00, 0xc0, 0xe0, 0x61, 0xc0, 0x01, 0x02, 0x05, 0x02, 0x01, 0x06, 0x08, 0x71, 0x85, 0x3a,
+		0xd5, 0xa2, 0x95, 0xaa, 0x95, 0xa2, 0x95, 0xaa, 0x95, 0x82, 0xc1, 0xe0, 0xfc, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfc, 0xe0, 0xc1, 0x82, 0x95, 0xaa,
+		0x95, 0xa2, 0x95, 0xaa, 0x95, 0xa2, 0x95, 0xaa, 0x95, 0xa2, 0x95, 0xaa, 0x95, 0xa2, 0x95, 0xaa,
+		0x00, 0x00, 0x3c, 0x13, 0x08, 0x04, 0xf2, 0x0e, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
+		0x0f, 0x10, 0x00, 0x07, 0x3f, 0xff, 0xfb, 0xfd, 0xff, 0xfd, 0xff, 0xff, 0xff, 0xe7, 0x8b, 0xf5,
+		0xfb, 0xff, 0xff, 0xff, 0xff, 0xff, 0xef, 0xf7, 0xfe, 0xee, 0xf7, 0xff, 0xff, 0xff, 0x1f, 0x00,
+		0x80, 0x08, 0x0d, 0x06, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x38, 0x40, 0x81, 0x0e,
+		0x30, 0xc1, 0x01, 0x01, 0x11, 0x45, 0x51, 0x15, 0x41, 0x55, 0x15, 0x41, 0x15, 0x41, 0x55, 0x17,
+		0x5f, 0x5f, 0x57, 0xd7, 0xd7, 0x57, 0x47, 0x5f, 0x5f, 0x77, 0x77, 0x57, 0x57, 0x5f, 0x5f, 0xc7,
+		0xdf, 0x17, 0xf7, 0x77, 0x57, 0x7f, 0x5f, 0x57, 0x15, 0x51, 0x55, 0x05, 0x55, 0x55, 0x51, 0x05,
+		0x51, 0x15, 0x45, 0x55, 0x01, 0x01, 0x01, 0x21, 0x01, 0x01, 0x01, 0x01, 0x21, 0x01, 0x21, 0x01,
+		0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01, 0x1e, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x07, 0x0f, 0x9f, 0x3f, 0x7f, 0xfb, 0xff, 0xf7, 0xf7,
+		0xff, 0xff, 0xf7, 0xf7, 0xfb, 0xff, 0x7f, 0x3f, 0x9f, 0x0f, 0x07, 0x03, 0x01, 0x00, 0x00, 0x02,
+		0x00, 0x00, 0x80, 0x40, 0x00, 0x00, 0x80, 0x40, 0x20, 0x10, 0x8e, 0x03, 0x80, 0x00, 0x01, 0x02,
+		0x3c, 0x03, 0xc0, 0x00, 0x00, 0x40, 0x42, 0x00, 0x80, 0x45, 0x41, 0x84, 0x11, 0x10, 0x84, 0x95,
+		0x10, 0x05, 0x15, 0x05, 0x07, 0x55, 0x45, 0x1e, 0x1f, 0x96, 0x97, 0x15, 0x05, 0x17, 0x1f, 0x1d,
+		0x15, 0x55, 0x87, 0x17, 0x01, 0x95, 0x90, 0x85, 0x11, 0x14, 0x15, 0x01, 0x15, 0x05, 0x00, 0x09,
+		0x00, 0x04, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00,
+		0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x80, 0x40, 0x00, 0x41, 0x02, 0x04, 0x08, 0x08, 0x10, 0x10,
+		0x20, 0x22, 0x2c, 0x10, 0x20, 0xc0, 0x80, 0x40, 0x30, 0x1f, 0x80, 0x54, 0xaa, 0x54, 0xa9, 0x55,
+		0x29, 0x55, 0x29, 0x15, 0x08, 0x04, 0x0a, 0x00, 0x3f, 0x40, 0xa0, 0xa0, 0x10, 0x08, 0x08, 0x04,
+		0x06, 0x05, 0x04, 0x02, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x04, 0x07, 0x04, 0x80, 0xc6, 0xa1, 0x60, 0x46, 0x01, 0xa1, 0x40, 0xc0, 0x22, 0x87, 0xe6, 0xa5,
+		0xa1, 0x40, 0x80, 0xc0, 0xa6, 0x61, 0x40, 0x04, 0x85, 0x62, 0x20, 0x40, 0x00, 0x80, 0x52, 0x15,
+		0x85, 0xc7, 0xa1, 0x60, 0x46, 0x01, 0x80, 0x66, 0x21, 0xa0, 0x40, 0x00, 0x80, 0x40, 0x20, 0x20,
+		0x00, 0x80, 0xc0, 0xa0, 0x60, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x08, 0x00, 0x00, 0xc0, 0xf0, 0xf8, 0xfc, 0xfc, 0xfe, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0x3f,
+		0x0f, 0x03, 0x01, 0x01, 0x11, 0x10, 0x14, 0x04, 0x04, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x1e,
+		0x7e, 0xfe, 0xfe, 0xfe, 0xfe, 0xfe, 0xfc, 0xfc, 0xf8, 0xf8, 0xf0, 0xe0, 0x80, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x68, 0x19, 0x0c, 0x08, 0x61, 0x5a, 0x49, 0x38, 0x00,
+		0x00, 0x00, 0x60, 0x59, 0x55, 0x31, 0x00, 0x20, 0x71, 0x68, 0x58, 0x10, 0x00, 0x01, 0x00, 0x60,
+		0x18, 0x55, 0x31, 0x01, 0x20, 0x50, 0x51, 0x74, 0x18, 0x01, 0x20, 0x50, 0x50, 0x71, 0x19, 0x05,
+		0x40, 0x18, 0x0d, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+````
+
+**stm32wbxx_it.c**:
+````c
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    stm32wbxx_it.c
+  * @author  MCD Application Team
+  * @brief   Main Interrupt Service Routines.
+  *          This file provides template for all exceptions handler and
+  *          peripherals interrupt service routine.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2019-2021 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "stm32wbxx_it.h"
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN TD */
+
+/* USER CODE END TD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+ 
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_i2c1_tx;
+extern IPCC_HandleTypeDef hipcc;
+extern DMA_HandleTypeDef hdma_lpuart1_tx;
+extern DMA_HandleTypeDef hdma_usart1_tx;
+extern UART_HandleTypeDef hlpuart1;
+extern UART_HandleTypeDef huart1;
+extern RTC_HandleTypeDef hrtc;
+/* USER CODE BEGIN EV */
+
+/* USER CODE END EV */
+
+/******************************************************************************/
+/*           Cortex Processor Interruption and Exception Handlers          */
+/******************************************************************************/
+/**
+  * @brief This function handles Non maskable interrupt.
+  */
+void NMI_Handler(void)
+{
+  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
+
+  /* USER CODE END NonMaskableInt_IRQn 0 */
+  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
+
+  /* USER CODE END NonMaskableInt_IRQn 1 */
+}
+
+/**
+  * @brief This function handles Hard fault interrupt.
+  */
+void HardFault_Handler(void)
+{
+  /* USER CODE BEGIN HardFault_IRQn 0 */
+
+  /* USER CODE END HardFault_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+    /* USER CODE END W1_HardFault_IRQn 0 */
+  }
+}
+
+/**
+  * @brief This function handles Memory management fault.
+  */
+void MemManage_Handler(void)
+{
+  /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+
+  /* USER CODE END MemoryManagement_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
+    /* USER CODE END W1_MemoryManagement_IRQn 0 */
+  }
+}
+
+/**
+  * @brief This function handles Prefetch fault, memory access fault.
+  */
+void BusFault_Handler(void)
+{
+  /* USER CODE BEGIN BusFault_IRQn 0 */
+
+  /* USER CODE END BusFault_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_BusFault_IRQn 0 */
+    /* USER CODE END W1_BusFault_IRQn 0 */
+  }
+}
+
+/**
+  * @brief This function handles Undefined instruction or illegal state.
+  */
+void UsageFault_Handler(void)
+{
+  /* USER CODE BEGIN UsageFault_IRQn 0 */
+
+  /* USER CODE END UsageFault_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
+    /* USER CODE END W1_UsageFault_IRQn 0 */
+  }
+}
+
+/**
+  * @brief This function handles System service call via SWI instruction.
+  */
+void SVC_Handler(void)
+{
+  /* USER CODE BEGIN SVCall_IRQn 0 */
+
+  /* USER CODE END SVCall_IRQn 0 */
+  /* USER CODE BEGIN SVCall_IRQn 1 */
+
+  /* USER CODE END SVCall_IRQn 1 */
+}
+
+/**
+  * @brief This function handles Debug monitor.
+  */
+void DebugMon_Handler(void)
+{
+  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
+
+  /* USER CODE END DebugMonitor_IRQn 0 */
+  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
+
+  /* USER CODE END DebugMonitor_IRQn 1 */
+}
+
+/**
+  * @brief This function handles Pendable request for system service.
+  */
+void PendSV_Handler(void)
+{
+  /* USER CODE BEGIN PendSV_IRQn 0 */
+
+  /* USER CODE END PendSV_IRQn 0 */
+  /* USER CODE BEGIN PendSV_IRQn 1 */
+
+  /* USER CODE END PendSV_IRQn 1 */
+}
+
+/**
+  * @brief This function handles System tick timer.
+  */
+void SysTick_Handler(void)
+{
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+
+  /* USER CODE END SysTick_IRQn 0 */
+  HAL_IncTick();
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+
+  /* USER CODE END SysTick_IRQn 1 */
+}
+
+/******************************************************************************/
+/* STM32WBxx Peripheral Interrupt Handlers                                    */
+/* Add here the Interrupt Handlers for the used peripherals.                  */
+/* For the available peripheral interrupt handler names,                      */
+/* please refer to the startup file (startup_stm32wbxx.s).                    */
+/******************************************************************************/
+
+/**
+  * @brief This function handles RTC wake-up interrupt through EXTI line 19.
+  */
+void RTC_WKUP_IRQHandler(void)
+{
+  /* USER CODE BEGIN RTC_WKUP_IRQn 0 */
+
+  /* USER CODE END RTC_WKUP_IRQn 0 */
+  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
+  /* USER CODE BEGIN RTC_WKUP_IRQn 1 */
+
+  /* USER CODE END RTC_WKUP_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 channel1 global interrupt.
+  */
+void DMA1_Channel1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_i2c1_tx);
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 channel4 global interrupt.
+  */
+void DMA1_Channel4_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel4_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_lpuart1_tx);
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles LPUART1 global interrupt.
+  */
+void LPUART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN LPUART1_IRQn 0 */
+
+  /* USER CODE END LPUART1_IRQn 0 */
+  HAL_UART_IRQHandler(&hlpuart1);
+  /* USER CODE BEGIN LPUART1_IRQn 1 */
+
+  /* USER CODE END LPUART1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles IPCC RX occupied interrupt.
+  */
+void IPCC_C1_RX_IRQHandler(void)
+{
+  /* USER CODE BEGIN IPCC_C1_RX_IRQn 0 */
+
+  /* USER CODE END IPCC_C1_RX_IRQn 0 */
+  HAL_IPCC_RX_IRQHandler(&hipcc);
+  /* USER CODE BEGIN IPCC_C1_RX_IRQn 1 */
+
+  /* USER CODE END IPCC_C1_RX_IRQn 1 */
+}
+
+/**
+  * @brief This function handles IPCC TX free interrupt.
+  */
+void IPCC_C1_TX_IRQHandler(void)
+{
+  /* USER CODE BEGIN IPCC_C1_TX_IRQn 0 */
+
+  /* USER CODE END IPCC_C1_TX_IRQn 0 */
+  HAL_IPCC_TX_IRQHandler(&hipcc);
+  /* USER CODE BEGIN IPCC_C1_TX_IRQn 1 */
+
+  /* USER CODE END IPCC_C1_TX_IRQn 1 */
+}
+
+/**
+  * @brief This function handles HSEM global interrupt.
+  */
+void HSEM_IRQHandler(void)
+{
+  /* USER CODE BEGIN HSEM_IRQn 0 */
+
+  /* USER CODE END HSEM_IRQn 0 */
+  HAL_HSEM_IRQHandler();
+  /* USER CODE BEGIN HSEM_IRQn 1 */
+
+  /* USER CODE END HSEM_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2 channel4 global interrupt.
+  */
+void DMA2_Channel4_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Channel4_IRQn 0 */
+
+  /* USER CODE END DMA2_Channel4_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_tx);
+  /* USER CODE BEGIN DMA2_Channel4_IRQn 1 */
+
+  /* USER CODE END DMA2_Channel4_IRQn 1 */
+}
+
+/* USER CODE BEGIN 1 */
+/**
+ * @brief  This function handles External line
+ *         interrupt request.
+ * @param  None
+ * @retval None
+ */
+void PUSH_BUTTON_SW1_EXTI_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(BUTTON_SW1_PIN);
+}
+
+/**
+ * @brief  This function handles External line
+ *         interrupt request.
+ * @param  None
+ * @retval None
+ */
+void PUSH_BUTTON_SW2_EXTI_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(BUTTON_SW2_PIN);
+}
+
+/**
+ * @brief  This function handles External line
+ *         interrupt request.
+ * @param  None
+ * @retval None
+ */
+void PUSH_BUTTON_SW3_EXTI_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(BUTTON_SW3_PIN);
+}
+
+/* USER CODE END 1 */
+````
+
+
+
 
 
 
