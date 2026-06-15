@@ -1,204 +1,723 @@
 # STM32WB55 BLE P2P Server — Temperature & Pressure Display
-This project implements a Bluetooth Low Energy (BLE) GATT Server running on the STM32WB55 microcontroller.
-The server receives environmental data (temperature + pressure) from a BLE client device and displays it on an SSD1306 OLED screen.
-
-The project is based on the official P2P Server example from STMicroelectronics and extends it with:
-
-* custom 6‑byte BLE payload decoding
-
-* temperature & pressure handling
-
-* OLED rendering
-
-* BMP180 sensor integration on the client side
-
-
-
-
-
-# 📡 BLE Architecture Overview
-The server exposes a Peer-to-Peer (P2P) Service with two characteristics:
-
-**1. Write Characteristic (Client → Server)**
-* UUID: P2P_WRITE_CHAR_UUID  
-* Properties: WRITE_WITHOUT_RESP | READ  
-* Max length: 6 bytes
-
-**Payload format:**
-
-<div align="center">
-
-| Byte | Meaning           |
-|------|-------------------|
-| 0    | Device ID         |
-| 1    | Temperature (°C)  |
-| 2    | Pressure LSB      |
-| 3    | Pressure          |
-| 4    | Pressure          |
-| 5    | Pressure MSB      |
-
-</div>
-
-
-
-
-
-**Example decoding:**
+**font_8x5.h**
 ````c
-uint8_t device_id = raw[0];
-uint8_t temp      = raw[1];
+#ifndef FONT_8X5_H_
+#define FONT_8X5_H_
 
-uint32_t press =
-      ((uint32_t)raw[2] << 0)
-    | ((uint32_t)raw[3] << 8)
-    | ((uint32_t)raw[4] << 16)
-    | ((uint32_t)raw[5] << 24);
-
-pressure = press;
-````
-
-
-
-**2. Notify Characteristic (Server → Client)**
-
-* UUID: P2P_NOTIFY_CHAR_UUID  
-
-* Properties: NOTIFY  
-
-* Length: 2 bytes
-
-
-Used to send button/LED status back to the client.
-
-# 📥 BLE Data Handling (p2p_server_app.c)
-**Incoming BLE writes are processed inside:**
-
-```c
-case P2PS_STM_WRITE_EVT:
-```
-**The server:**
-
-1. Logs raw bytes
-
-2. Validates payload length
-
-3. Extracts temperature
-
-4. Extracts pressure (if available)
-
-5. Updates global variables
-
-
-
-**Example logging:**
-````c
-APP_DBG_MSG("RAW (%d bytes): ", len);
-for(uint8_t i = 0; i < len; i++)
+// Font definition
+const uint8_t font_8x5[] =
 {
-    APP_DBG_MSG("0x%02X ", raw[i]);
-}
-APP_DBG_MSG("\n");
+			8, 5, //height, width
+			0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x5F, 0x00, 0x00,
+			0x00, 0x07, 0x00, 0x07, 0x00,
+			0x14, 0x7F, 0x14, 0x7F, 0x14,
+			0x24, 0x2A, 0x7F, 0x2A, 0x12,
+			0x23, 0x13, 0x08, 0x64, 0x62,
+			0x36, 0x49, 0x56, 0x20, 0x50,
+			0x00, 0x08, 0x07, 0x03, 0x00,
+			0x00, 0x1C, 0x22, 0x41, 0x00,
+			0x00, 0x41, 0x22, 0x1C, 0x00,
+			0x2A, 0x1C, 0x7F, 0x1C, 0x2A,
+			0x08, 0x08, 0x3E, 0x08, 0x08,
+			0x00, 0x80, 0x70, 0x30, 0x00,
+			0x08, 0x08, 0x08, 0x08, 0x08,
+			0x00, 0x00, 0x60, 0x60, 0x00,
+			0x20, 0x10, 0x08, 0x04, 0x02,
+			0x3E, 0x51, 0x49, 0x45, 0x3E,
+			0x00, 0x42, 0x7F, 0x40, 0x00,
+			0x72, 0x49, 0x49, 0x49, 0x46,
+			0x21, 0x41, 0x49, 0x4D, 0x33,
+			0x18, 0x14, 0x12, 0x7F, 0x10,
+			0x27, 0x45, 0x45, 0x45, 0x39,
+			0x3C, 0x4A, 0x49, 0x49, 0x31,
+			0x41, 0x21, 0x11, 0x09, 0x07,
+			0x36, 0x49, 0x49, 0x49, 0x36,
+			0x46, 0x49, 0x49, 0x29, 0x1E,
+			0x00, 0x00, 0x14, 0x00, 0x00,
+			0x00, 0x40, 0x34, 0x00, 0x00,
+			0x00, 0x08, 0x14, 0x22, 0x41,
+			0x14, 0x14, 0x14, 0x14, 0x14,
+			0x00, 0x41, 0x22, 0x14, 0x08,
+			0x02, 0x01, 0x59, 0x09, 0x06,
+			0x3E, 0x41, 0x5D, 0x59, 0x4E,
+			0x7C, 0x12, 0x11, 0x12, 0x7C,
+			0x7F, 0x49, 0x49, 0x49, 0x36,
+			0x3E, 0x41, 0x41, 0x41, 0x22,
+			0x7F, 0x41, 0x41, 0x41, 0x3E,
+			0x7F, 0x49, 0x49, 0x49, 0x41,
+			0x7F, 0x09, 0x09, 0x09, 0x01,
+			0x3E, 0x41, 0x41, 0x51, 0x73,
+			0x7F, 0x08, 0x08, 0x08, 0x7F,
+			0x00, 0x41, 0x7F, 0x41, 0x00,
+			0x20, 0x40, 0x41, 0x3F, 0x01,
+			0x7F, 0x08, 0x14, 0x22, 0x41,
+			0x7F, 0x40, 0x40, 0x40, 0x40,
+			0x7F, 0x02, 0x1C, 0x02, 0x7F,
+			0x7F, 0x04, 0x08, 0x10, 0x7F,
+			0x3E, 0x41, 0x41, 0x41, 0x3E,
+			0x7F, 0x09, 0x09, 0x09, 0x06,
+			0x3E, 0x41, 0x51, 0x21, 0x5E,
+			0x7F, 0x09, 0x19, 0x29, 0x46,
+			0x26, 0x49, 0x49, 0x49, 0x32,
+			0x03, 0x01, 0x7F, 0x01, 0x03,
+			0x3F, 0x40, 0x40, 0x40, 0x3F,
+			0x1F, 0x20, 0x40, 0x20, 0x1F,
+			0x3F, 0x40, 0x38, 0x40, 0x3F,
+			0x63, 0x14, 0x08, 0x14, 0x63,
+			0x03, 0x04, 0x78, 0x04, 0x03,
+			0x61, 0x59, 0x49, 0x4D, 0x43,
+			0x00, 0x7F, 0x41, 0x41, 0x41,
+			0x02, 0x04, 0x08, 0x10, 0x20,
+			0x00, 0x41, 0x41, 0x41, 0x7F,
+			0x04, 0x02, 0x01, 0x02, 0x04,
+			0x40, 0x40, 0x40, 0x40, 0x40,
+			0x00, 0x03, 0x07, 0x08, 0x00,
+			0x20, 0x54, 0x54, 0x78, 0x40,
+			0x7F, 0x28, 0x44, 0x44, 0x38,
+			0x38, 0x44, 0x44, 0x44, 0x28,
+			0x38, 0x44, 0x44, 0x28, 0x7F,
+			0x38, 0x54, 0x54, 0x54, 0x18,
+			0x00, 0x08, 0x7E, 0x09, 0x02,
+			0x18, 0xA4, 0xA4, 0x9C, 0x78,
+			0x7F, 0x08, 0x04, 0x04, 0x78,
+			0x00, 0x44, 0x7D, 0x40, 0x00,
+			0x20, 0x40, 0x40, 0x3D, 0x00,
+			0x7F, 0x10, 0x28, 0x44, 0x00,
+			0x00, 0x41, 0x7F, 0x40, 0x00,
+			0x7C, 0x04, 0x78, 0x04, 0x78,
+			0x7C, 0x08, 0x04, 0x04, 0x78,
+			0x38, 0x44, 0x44, 0x44, 0x38,
+			0xFC, 0x18, 0x24, 0x24, 0x18,
+			0x18, 0x24, 0x24, 0x18, 0xFC,
+			0x7C, 0x08, 0x04, 0x04, 0x08,
+			0x48, 0x54, 0x54, 0x54, 0x24,
+			0x04, 0x04, 0x3F, 0x44, 0x24,
+			0x3C, 0x40, 0x40, 0x20, 0x7C,
+			0x1C, 0x20, 0x40, 0x20, 0x1C,
+			0x3C, 0x40, 0x30, 0x40, 0x3C,
+			0x44, 0x28, 0x10, 0x28, 0x44,
+			0x4C, 0x90, 0x90, 0x90, 0x7C,
+			0x44, 0x64, 0x54, 0x4C, 0x44,
+			0x00, 0x08, 0x36, 0x41, 0x00,
+			0x00, 0x00, 0x77, 0x00, 0x00,
+			0x00, 0x41, 0x36, 0x08, 0x00,
+			0x02, 0x01, 0x02, 0x04, 0x02,
+};
+
+#endif /* FONT_8X5_H_ */
+
 ````
 
-#📺 OLED Display Rendering
-The server displays the received values on an SSD1306 OLED using DMA‑driven I2C.
-
-**Rendering loop (main.c):**
-
+*fonts.h**
 ````c
-if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
+#ifndef FONTS_FONTS_H_
+#define FONTS_FONTS_H_
+
+//
+//	Set fonts you want to use
+//
+#define FONT_8x5 1
+
+//
+//	Automatic includes
+//
+#if(FONT_8x5 ==1)
+#include "font_8x5.h"
+#endif
+
+#endif /* FONTS_FONTS_H_ */
+````
+
+
+**GFX_BW.c**
+````c
+
+#include "main.h"
+
+#include "OLED_SSD1306.h"
+#include "GFX_BW.h"
+
+#if USING_LINES == 1
+#include <stdlib.h> // for abs() function
+#endif
+#if USING_IMAGE_ROTATE == 1
+#include <math.h>
+#endif
+
+#define _swap_int(a, b) { int t = a; a = b; b = t; }
+
+#if  USING_STRINGS == 1
+const uint8_t* font;
+uint8_t size = 1;
+
+void GFX_SetFont(const uint8_t* font_t)
 {
-    SSD1306_Clear(BLACK);
-
-    extern uint8_t temp;
-    extern uint32_t pressure;
-
-    uint32_t pressure_hPa = pressure / 100;
-
-    char txt[20];
-    sprintf(txt, "Temperature: %d C", temp);
-    GFX_DrawString(10, 30, txt, WHITE, BLACK);
-
-    char txt2[20];
-    sprintf(txt2, "Pressure: %lu hPa", pressure_hPa);
-    GFX_DrawString(10, 40, txt2, WHITE, BLACK);
-
-    SSD1306_Display();
+	font = font_t;
 }
+
+void GFX_SetFontSize(uint8_t size_t)
+{
+	if(size_t != 0)
+		size = size_t;
+}
+
+uint8_t GFX_GetFontHeight(void)
+{
+	return font[0];
+}
+
+uint8_t GFX_GetFontWidth(void)
+{
+	return font[1];
+}
+
+uint8_t GFX_GetFontSize(void)
+{
+	return size;
+}
+
+void GFX_DrawChar(int x, int y, char chr, uint8_t color, uint8_t background)
+{
+	if(chr > 0x7E) return; // chr > '~'
+
+	for(uint8_t i=0; i<font[1]; i++ )
+	{
+        uint8_t line = (uint8_t)font[(chr-0x20) * font[1] + i + 2];
+
+        for(int8_t j=0; j<font[0]; j++, line >>= 1)
+        {
+            if(line & 1)
+            {
+            	if(size == 1)
+            		GFX_DrawPixel(x+i, y+j, color);
+            	else
+            		GFX_DrawFillRectangle(x+i*size, y+j*size, size, size, color);
+            }
+            else if(background == 0)
+            {
+            	if(size == 1)
+					GFX_DrawPixel(x+i, y+j, background);
+				else
+					GFX_DrawFillRectangle(x+i*size, y+j*size, size, size, background);
+            }
+        }
+    }
+}
+
+void GFX_DrawString(int x, int y, char* str, uint8_t color, uint8_t background)
+{
+	int x_tmp = x;
+	char znak;
+	znak = *str;
+	while(*str++)
+	{
+		GFX_DrawChar(x_tmp, y, znak, color, background);
+		x_tmp += ((uint8_t)font[1] * size) + 1;
+		if(background == 0)
+		{
+			for(uint8_t i=0; i<(font[0]*size); i++)
+			{
+				GFX_DrawPixel(x_tmp-1, y+i, PIXEL_BLACK);
+			}
+		}
+		znak = *str;
+	}
+}
+#endif
+#if USING_LINES == 1
+void GFX_WriteLine(int x_start, int y_start, int x_end, int y_end, uint8_t color)
+{
+	int16_t steep = abs(y_end - y_start) > abs(x_end - x_start);
+
+	    if (steep) {
+	        _swap_int(x_start, y_start);
+	        _swap_int(x_end, y_end);
+	    }
+
+	    if (x_start > x_end) {
+	        _swap_int(x_start, x_end);
+	        _swap_int(y_start, y_end);
+	    }
+
+	    int16_t dx, dy;
+	    dx = x_end - x_start;
+	    dy = abs(y_end - y_start);
+
+	    int16_t err = dx / 2;
+	    int16_t ystep;
+
+	    if (y_start < y_end) {
+	        ystep = 1;
+	    } else {
+	        ystep = -1;
+	    }
+
+	    for (; x_start<=x_end; x_start++) {
+	        if (steep) {
+	        	GFX_DrawPixel(y_start, x_start, color);
+	        } else {
+	        	GFX_DrawPixel(x_start, y_start, color);
+	        }
+	        err -= dy;
+	        if (err < 0) {
+	            y_start += ystep;
+	            err += dx;
+	        }
+	    }
+}
+
+void GFX_DrawFastVLine(int x_start, int y_start, int h, uint8_t color)
+{
+	GFX_WriteLine(x_start, y_start, x_start, y_start+h-1, color);
+}
+
+void GFX_DrawFastHLine(int x_start, int y_start, int w, uint8_t color)
+{
+	GFX_WriteLine(x_start, y_start, x_start+w-1, y_start, color);
+}
+
+void GFX_DrawLine(int x_start, int y_start, int x_end, int y_end, uint8_t color)
+{
+	if(x_start == x_end){
+	        if(y_start > y_end) _swap_int(y_start, y_end);
+	        GFX_DrawFastVLine(x_start, y_start, y_end - y_start + 1, color);
+	    } else if(y_start == y_end){
+	        if(x_start > x_end) _swap_int(x_start, x_end);
+	        GFX_DrawFastHLine(x_start, y_start, x_end - x_start + 1, color);
+	    } else {
+
+	    	GFX_WriteLine(x_start, y_start, x_end, y_end, color);
+	    }
+}
+#endif
+#if USING_RECTANGLE == 1
+void GFX_DrawRectangle(int x, int y, uint16_t w, uint16_t h, uint8_t color)
+{
+
+    GFX_DrawFastHLine(x, y, w, color);
+    GFX_DrawFastHLine(x, y+h-1, w, color);
+    GFX_DrawFastVLine(x, y, h, color);
+    GFX_DrawFastVLine(x+w-1, y, h, color);
+
+}
+#endif
+#if USING_FILL_RECTANGLE == 1
+void GFX_DrawFillRectangle(int x, int y, uint16_t w, uint16_t h, uint8_t color)
+{
+    for (int i=x; i<x+w; i++) {
+    	GFX_DrawFastVLine(i, y, h, color);
+    }
+
+}
+#endif
+#if USING_CIRCLE == 1
+void GFX_DrawCircle(int x0, int y0, uint16_t r, uint8_t color)
+{
+    int16_t f = 1 - r;
+    int16_t ddF_x = 1;
+    int16_t ddF_y = -2 * r;
+    int16_t x = 0;
+    int16_t y = r;
+
+    GFX_DrawPixel(x0  , y0+r, color);
+    GFX_DrawPixel(x0  , y0-r, color);
+    GFX_DrawPixel(x0+r, y0  , color);
+    GFX_DrawPixel(x0-r, y0  , color);
+
+    while (x<y) {
+        if (f >= 0) {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x;
+
+        GFX_DrawPixel(x0 + x, y0 + y, color);
+        GFX_DrawPixel(x0 - x, y0 + y, color);
+        GFX_DrawPixel(x0 + x, y0 - y, color);
+        GFX_DrawPixel(x0 - x, y0 - y, color);
+        GFX_DrawPixel(x0 + y, y0 + x, color);
+        GFX_DrawPixel(x0 - y, y0 + x, color);
+        GFX_DrawPixel(x0 + y, y0 - x, color);
+        GFX_DrawPixel(x0 - y, y0 - x, color);
+    }
+
+}
+#endif
+#ifdef CIRCLE_HELPER
+void GFX_DrawCircleHelper( int x0, int y0, uint16_t r, uint8_t cornername, uint8_t color)
+{
+    int16_t f     = 1 - r;
+    int16_t ddF_x = 1;
+    int16_t ddF_y = -2 * r;
+    int16_t x     = 0;
+    int16_t y     = r;
+
+    while (x<y) {
+        if (f >= 0) {
+            y--;
+            ddF_y += 2;
+            f     += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f     += ddF_x;
+        if (cornername & 0x4) {
+            GFX_DrawPixel(x0 + x, y0 + y, color);
+            GFX_DrawPixel(x0 + y, y0 + x, color);
+        }
+        if (cornername & 0x2) {
+            GFX_DrawPixel(x0 + x, y0 - y, color);
+            GFX_DrawPixel(x0 + y, y0 - x, color);
+        }
+        if (cornername & 0x8) {
+            GFX_DrawPixel(x0 - y, y0 + x, color);
+            GFX_DrawPixel(x0 - x, y0 + y, color);
+        }
+        if (cornername & 0x1) {
+            GFX_DrawPixel(x0 - y, y0 - x, color);
+            GFX_DrawPixel(x0 - x, y0 - y, color);
+        }
+    }
+}
+#endif
+#ifdef FILL_CIRCLE_HELPER
+void GFX_DrawFillCircleHelper(int x0, int y0, uint16_t r, uint8_t cornername, int16_t delta, uint8_t color)
+{
+
+    int16_t f     = 1 - r;
+    int16_t ddF_x = 1;
+    int16_t ddF_y = -2 * r;
+    int16_t x     = 0;
+    int16_t y     = r;
+
+    while (x<y) {
+        if (f >= 0) {
+            y--;
+            ddF_y += 2;
+            f     += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f     += ddF_x;
+
+        if (cornername & 0x1) {
+            GFX_DrawFastVLine(x0+x, y0-y, 2*y+1+delta, color);
+            GFX_DrawFastVLine(x0+y, y0-x, 2*x+1+delta, color);
+        }
+        if (cornername & 0x2) {
+            GFX_DrawFastVLine(x0-x, y0-y, 2*y+1+delta, color);
+            GFX_DrawFastVLine(x0-y, y0-x, 2*x+1+delta, color);
+        }
+    }
+}
+#endif
+#if USING_FILL_CIRCLE == 1
+void GFX_DrawFillCircle(int x0, int y0, uint16_t r, uint8_t color)
+{
+
+	GFX_DrawFastVLine(x0, y0-r, 2*r+1, color);
+    GFX_DrawFillCircleHelper(x0, y0, r, 3, 0, color);
+}
+#endif
+#if USING_ROUND_RECTANGLE == 1
+void GFX_DrawRoundRectangle(int x, int y, uint16_t w, uint16_t h, uint16_t r, uint8_t color)
+{
+	GFX_DrawFastHLine(x+r  , y    , w-2*r, color); // Top
+    GFX_DrawFastHLine(x+r  , y+h-1, w-2*r, color); // Bottom
+    GFX_DrawFastVLine(x    , y+r  , h-2*r, color); // Left
+    GFX_DrawFastVLine(x+w-1, y+r  , h-2*r, color); // Right
+    // draw four corners
+    GFX_DrawCircleHelper(x+r    , y+r    , r, 1, color);
+    GFX_DrawCircleHelper(x+w-r-1, y+r    , r, 2, color);
+    GFX_DrawCircleHelper(x+w-r-1, y+h-r-1, r, 4, color);
+    GFX_DrawCircleHelper(x+r    , y+h-r-1, r, 8, color);
+}
+#endif
+#if USING_FILL_ROUND_RECTANGLE == 1
+void GFX_DrawFillRoundRectangle(int x, int y, uint16_t w, uint16_t h, uint16_t r, uint8_t color)
+{
+    // smarter version
+
+	GFX_DrawFillRectangle(x+r, y, w-2*r, h, color);
+
+    // draw four corners
+	GFX_DrawFillCircleHelper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
+	GFX_DrawFillCircleHelper(x+r    , y+r, r, 2, h-2*r-1, color);
+}
+#endif
+#if USING_TRIANGLE == 1
+void GFX_DrawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, uint8_t color)
+{
+	GFX_DrawLine(x0, y0, x1, y1, color);
+    GFX_DrawLine(x1, y1, x2, y2, color);
+    GFX_DrawLine(x2, y2, x0, y0, color);
+}
+#endif
+#if USING_FILL_TRIANGLE == 1
+void GFX_DrawFillTriangle(int x0, int y0, int x1, int y1, int x2, int y2, uint8_t color)
+{
+
+    int16_t a, b, y, last;
+
+    // Sort coordinates by Y order (y2 >= y1 >= y0)
+    if (y0 > y1) {
+    	_swap_int(y0, y1); _swap_int(x0, x1);
+    }
+    if (y1 > y2) {
+    	_swap_int(y2, y1); _swap_int(x2, x1);
+    }
+    if (y0 > y1) {
+    	_swap_int(y0, y1); _swap_int(x0, x1);
+    }
+
+    if(y0 == y2) { // Handle awkward all-on-same-line case as its own thing
+        a = b = x0;
+        if(x1 < a)      a = x1;
+        else if(x1 > b) b = x1;
+        if(x2 < a)      a = x2;
+        else if(x2 > b) b = x2;
+        GFX_DrawFastHLine(a, y0, b-a+1, color);
+        return;
+    }
+
+    int16_t
+    dx01 = x1 - x0,
+    dy01 = y1 - y0,
+    dx02 = x2 - x0,
+    dy02 = y2 - y0,
+    dx12 = x2 - x1,
+    dy12 = y2 - y1;
+    int32_t
+    sa   = 0,
+    sb   = 0;
+
+    // For upper part of triangle, find scanline crossings for segments
+    // 0-1 and 0-2.  If y1=y2 (flat-bottomed triangle), the scanline y1
+    // is included here (and second loop will be skipped, avoiding a /0
+    // error there), otherwise scanline y1 is skipped here and handled
+    // in the second loop...which also avoids a /0 error here if y0=y1
+    // (flat-topped triangle).
+    if(y1 == y2) last = y1;   // Include y1 scanline
+    else         last = y1-1; // Skip it
+
+    for(y=y0; y<=last; y++) {
+        a   = x0 + sa / dy01;
+        b   = x0 + sb / dy02;
+        sa += dx01;
+        sb += dx02;
+        /* longhand:
+        a = x0 + (x1 - x0) * (y - y0) / (y1 - y0);
+        b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
+        */
+        if(a > b) _swap_int(a,b);
+        GFX_DrawFastHLine(a, y, b-a+1, color);
+    }
+
+    // For lower part of triangle, find scanline crossings for segments
+    // 0-2 and 1-2.  This loop is skipped if y1=y2.
+    sa = dx12 * (y - y1);
+    sb = dx02 * (y - y0);
+    for(; y<=y2; y++) {
+        a   = x1 + sa / dy12;
+        b   = x0 + sb / dy02;
+        sa += dx12;
+        sb += dx02;
+        /* longhand:
+        a = x1 + (x2 - x1) * (y - y1) / (y2 - y1);
+        b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
+        */
+        if(a > b) _swap_int(a,b);
+        GFX_DrawFastHLine(a, y, b-a+1, color);
+    }
+}
+#endif
+#if USING_IMAGE == 1
+#if AVR_USING == 1
+void GFX_Image_P(int x, int y, uint8_t *img, uint8_t w, uint8_t h, uint8_t color)
+{
+	uint8_t i, j, byteWidth = (w+7)/8;
+
+	for(j = 0; j < h; j++)
+	{
+		for(i = 0; i < w; i++)
+		{
+			if(pgm_read_byte(img + j *byteWidth + i /8) & (128 >> (i&7)) )
+				GFX_DrawPixel(x+i, y+j, color);
+		}
+	}
+}
+#endif
+#if STM32_USING ==1
+void GFX_Image(int x, int y, const uint8_t *img, uint8_t w, uint8_t h, uint8_t color)
+{
+	uint8_t i, j, byteWidth = (w+7)/8;
+
+	for(j = 0; j < h; j++)
+	{
+		for(i = 0; i < w; i++)
+		{
+			if(img[j *byteWidth + i /8] & (128 >> (i&7)) )
+				GFX_DrawPixel(x+i, y+j, color);
+		}
+	}
+}
+#if USING_IMAGE_ROTATE == 1
+
+const double sinus_LUT[] =
+{// 0* to 90* = 91 valuse
+		0.0000,
+		0.0175,
+		0.0349,
+		0.0523,
+		0.0698,
+		0.0872,
+		0.1045,
+		0.1219,
+		0.1392,
+		0.1564,
+		0.1736,
+		0.1908,
+		0.2079,
+		0.2250,
+		0.2419,
+		0.2588,
+		0.2756,
+		0.2924,
+		0.3090,
+		0.3256,
+		0.3420,
+		0.3584,
+		0.3746,
+		0.3907,
+		0.4067,
+		0.4226,
+		0.4384,
+		0.4540,
+		0.4695,
+		0.4848,
+		0.5000,
+		0.5150,
+		0.5299,
+		0.5446,
+		0.5592,
+		0.5736,
+		0.5878,
+		0.6018,
+		0.6157,
+		0.6293,
+		0.6428,
+		0.6561,
+		0.6691,
+		0.6820,
+		0.6947,
+		0.7071,
+		0.7193,
+		0.7314,
+		0.7431,
+		0.7547,
+		0.7660,
+		0.7771,
+		0.7880,
+		0.7986,
+		0.8090,
+		0.8192,
+		0.8290,
+		0.8387,
+		0.8480,
+		0.8572,
+		0.8660,
+		0.8746,
+		0.8829,
+		0.8910,
+		0.8988,
+		0.9063,
+		0.9135,
+		0.9205,
+		0.9272,
+		0.9336,
+		0.9397,
+		0.9455,
+		0.9511,
+		0.9563,
+		0.9613,
+		0.9659,
+		0.9703,
+		0.9744,
+		0.9781,
+		0.9816,
+		0.9848,
+		0.9877,
+		0.9903,
+		0.9925,
+		0.9945,
+		0.9962,
+		0.9976,
+		0.9986,
+		0.9994,
+		0.9998,
+		1.0000,
+};
+
+double sinus(uint16_t angle)
+{
+	angle %= 360;
+	if((angle >= 0) && (angle < 90)) return sinus_LUT[angle];
+	if((angle >= 90) && (angle < 180)) return sinus_LUT[180 - angle];
+	if((angle >= 180) && (angle < 270)) return -(sinus_LUT[angle - 180]);
+	if((angle >= 270) && (angle < 360)) return -(sinus_LUT[180 - (angle - 180)]);
+	return 0; // will be never here
+}
+
+void GFX_ImageRotate(int x, int y, const uint8_t *img, uint8_t w, uint8_t h, uint8_t color, uint16_t angle)
+{
+	angle %= 360;
+
+	uint8_t wHalf = w/2;
+	uint8_t hHalf = h/2;
+
+	uint8_t i, j, byteWidth = (w+7)/8;
+
+	double sinma = sinus(angle);
+	double cosma = sinus(angle + 90);
+
+	for(j = 0; j < h; j++)
+	{
+		for(i = 0; i < w; i++)
+		{
+			if(img[j *byteWidth + i /8] & (128 >> (i&7)) )
+			{
+				int xt = i - wHalf;
+				int yt = j - hHalf;
+
+				int xs = (xt*cosma - yt*sinma) + wHalf;
+				int ys = (xt*sinma + yt*cosma) + hHalf;
+
+				GFX_DrawPixel(xs+x, ys+y, color);
+			}
+		}
+	}
+}
+#endif
+#endif
+#endif
 ````
 
-#⏱ Timer & Refresh Logic
-**A 1 ms RTC wakeup interrupt increments a software timer.
-The OLED refreshes only when:**
-
-```c
-hi2c1.hdmatx->State == HAL_DMA_STATE_READY
-This prevents I2C bus contention and ensures smooth rendering.
-```
-#🌡 Global Variables (Server)
-```c
-uint8_t temp = 0;
-uint32_t pressure = 0;
-These are updated exclusively by BLE events.
-```
-#📤 BLE Client Payload Format
-**The BLE client sends:**
-
-````c
-uint8_t payload[6];
-payload[0] = 0x01;          // Device ID
-payload[1] = temperature;   // 1 byte
-payload[2] = pressure >> 0;
-payload[3] = pressure >> 8;
-payload[4] = pressure >> 16;
-payload[5] = pressure >> 24;
-````
-**Transmission:**
-````c
-aci_gatt_write_without_resp(connHandle, charHandle, 6, payload);
-````
 
 
 
-# 🧩 Hardware Requirements
-* STM32WB55 (e.g., Nucleo-WB55RG)
 
-* SSD1306 OLED (I2C)
 
-* BMP180 sensor (on client side)
 
-* ST-Link V3
 
-* 3.3V power supply
 
-# 🛠 Software Requirements
-* STM32CubeIDE 1.15+
 
-* STM32CubeWB Firmware Package
 
-* BLE Stack: stm32wb5x_BLE_Stack_fw.bin
 
-* OLED + GFX libraries
 
-# 🚀 How to Run
-* Flash BLE stack to CPU2 (if not already installed)
-
-* Flash server firmware to STM32WB55
-
-* Flash client firmware to second STM32WB55
-
-* Power both devices
-
-* Press the switch 1 two times on client board
-
-* BLE connects automatically 
-
-**Server OLED displays:**
-
-````
-Temperature: XX C
-Pressure: XXXX hPa
-````
 
 
 
