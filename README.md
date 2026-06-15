@@ -1,4 +1,7 @@
 # STM32WB55 BLE P2P Server — Temperature & Pressure Display
+##📘 Source Code Overview
+**This project implements a BLE P2P Server on the STM32WB55 and displays temperature and pressure values on an SSD1306 OLED using a custom monochrome graphics engine.
+The codebase is divided into several functional modules described below.**
 <p align="center">
 <img width="301" height="521" alt="image" src="https://github.com/user-attachments/assets/14047ba0-0abe-4f75-8842-fe0846264eb4" />
 </p>
