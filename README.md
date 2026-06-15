@@ -6,7 +6,8 @@ The codebase is divided into several functional modules described below.**
 <p align="center">
 <img width="611" height="642" alt="image" src="https://github.com/user-attachments/assets/38750f67-2b23-4be5-90aa-5b5470def4fd" />
 </p>
-**Configuration of :**
+
+**Configuration of I2C:**
 <p align="center">
 <img width="501" height="656" alt="image" src="https://github.com/user-attachments/assets/e2455002-1e72-409f-afdf-cfc3d4eaa546" />
 </p>
