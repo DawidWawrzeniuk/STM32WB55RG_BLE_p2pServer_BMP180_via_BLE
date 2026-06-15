@@ -1148,6 +1148,22 @@ int main(void)
     char fps_c[20];
 
 
+    RTC_TimeTypeDef rtcTime = {0};
+    RTC_DateTypeDef rtcDate = {0};
+
+    rtcTime.Hours = 18;
+    rtcTime.Minutes = 37;
+    rtcTime.Seconds = 0;
+
+    rtcDate.WeekDay = RTC_WEEKDAY_THURSDAY;
+    rtcDate.Date = 15;
+    rtcDate.Month = 6;
+    rtcDate.Year = 26; // 2025
+
+
+    HAL_RTC_SetTime(&hrtc, &rtcTime, RTC_FORMAT_BIN);
+    HAL_RTC_SetDate(&hrtc, &rtcDate, RTC_FORMAT_BIN);
+
 
 
 
@@ -1158,38 +1174,57 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	while(1)
-	{
-		 if(!timer_1s)
-			  	{
-			  		  timer_1s = 1000;
-			  		  fps = frames;
-			  		  frames = 0;
-			  		  loops_overal = loops;
-			  		  loops = 0;
-			  	}
+  while(1)
+  	{
+	  HAL_RTC_GetTime(&hrtc, &rtcTime, RTC_FORMAT_BIN);
+	  HAL_RTC_GetDate(&hrtc, &rtcDate, RTC_FORMAT_BIN);
 
-			  if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
-			  	{
-				  SSD1306_Clear(BLACK);
+	      if(!timer_1s)
+	      {
+	          timer_1s = 1000;
+	          fps = frames;
+	          frames = 0;
+	          loops_overal = loops;
+	          loops = 0;
+	      }
 
-				      // TEMPERATURA
-				      char txt_temp[20];
-				      sprintf(txt_temp, "TEMP: %d C", temp);
-				      GFX_DrawString(10,10, txt_temp, WHITE, BLACK);
+	      if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
+	      {
+	          SSD1306_Clear(BLACK);
+	          // NAGŁÓWEK
 
-				      // CISNIENIE
-				      char txt_press[20];
-				      sprintf(txt_press, "PRES: %lu hPa", pressure / 100);
-				      GFX_DrawString(10,20, txt_press, WHITE, BLACK);
+	          GFX_DrawString(2, 0, "Gothenburg", WHITE, BLACK);
+
+	          // GODZINA
+	          char txt_time[10];
+	          sprintf(txt_time, "%02d:%02d", rtcTime.Hours, rtcTime.Minutes);
+	          GFX_DrawString(70, 0, txt_time, WHITE, BLACK);
+
+	          GFX_DrawLine(0, 25, 127, 25, WHITE);
+
+	          // DATA
+	          char txt_date[20];
+	          sprintf(txt_date, "%02d.%02d.%04d", rtcDate.Date, rtcDate.Month, 2000 + rtcDate.Year);
+	          GFX_DrawString(2, 15, txt_date, WHITE, BLACK);
+
+	          // TEMPERATURA
+	          char txt_temp[20];
+	          sprintf(txt_temp, "Temperature: %d C", temp);
+	          GFX_DrawString(2, 30, txt_temp, WHITE, BLACK);
+
+	          // CIŚNIENIE
+	          char txt_press[20];
+	          sprintf(txt_press, "Pressure: %lu hPa", pressure / 100);
+
+	          GFX_DrawString(2, 45, txt_press, WHITE, BLACK);
+
+	          SSD1306_Display();
+	          loops++;
+  			  	}
+  			    HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, 0);
+  			    loops++;
 
 
-				      SSD1306_Display();   // aktualizacja ekranu
-
-				      loops++;
-			  	}
-			    HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, 0);
-			    loops++;
 
 
 
@@ -1199,13 +1234,11 @@ int main(void)
 
 
 
+      /* USER CODE END WHILE */
+      MX_APPE_Process();
 
-
-    /* USER CODE END WHILE */
-    MX_APPE_Process();
-
-    /* USER CODE BEGIN 3 */
-  }
+      /* USER CODE BEGIN 3 */
+    }
   /* USER CODE END 3 */
 }
 
