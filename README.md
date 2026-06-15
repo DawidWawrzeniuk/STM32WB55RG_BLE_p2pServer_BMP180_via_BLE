@@ -1,4 +1,15 @@
 # STM32WB55 BLE P2P Server — Temperature & Pressure Display
+
+
+
+
+
+
+
+<p align="center">
+<img width="301" height="521" alt="image" src="https://github.com/user-attachments/assets/14047ba0-0abe-4f75-8842-fe0846264eb4" />
+</p>
+
 **font_8x5.h**:
 ````c
 #ifndef FONT_8X5_H_
@@ -2744,8 +2755,817 @@ void PUSH_BUTTON_SW3_EXTI_IRQHandler(void)
 /* USER CODE END 1 */
 ````
 
+**p2p_server_app.c**:
+````c
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    p2p_server_app.c
+  * @author  MCD Application Team
+  * @brief   Peer to peer Server Application
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2019-2021 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "app_common.h"
+#include "dbg_trace.h"
+#include "ble.h"
+#include "p2p_server_app.h"
+#include "stm32_seq.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+ typedef struct{
+    uint8_t             Device_Led_Selection;
+    uint8_t             Led1;
+ }P2P_LedCharValue_t;
+
+ typedef struct{
+    uint8_t             Device_Button_Selection;
+    uint8_t             ButtonStatus;
+ }P2P_ButtonCharValue_t;
+
+typedef struct
+{
+  uint8_t               Notification_Status; /* used to check if P2P Server is enabled to Notify */
+  P2P_LedCharValue_t    LedControl;
+  P2P_ButtonCharValue_t ButtonControl;
+  uint16_t              ConnectionHandle;
+} P2P_Server_App_Context_t;
+/* USER CODE END PTD */
+
+/* Private defines ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macros -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN PV */
+uint8_t temp=0;
+uint32_t pressure=0;
+/**
+ * START of Section BLE_APP_CONTEXT
+ */
+
+static P2P_Server_App_Context_t P2P_Server_App_Context;
+
+/**
+ * END of Section BLE_APP_CONTEXT
+ */
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
+static void P2PS_Send_Notification(void);
+static void P2PS_APP_LED_BUTTON_context_Init(void);
+/* USER CODE END PFP */
+
+/* Functions Definition ------------------------------------------------------*/
+void P2PS_STM_App_Notification(P2PS_STM_App_Notification_evt_t *pNotification)
+{
+/* USER CODE BEGIN P2PS_STM_App_Notification_1 */
+
+/* USER CODE END P2PS_STM_App_Notification_1 */
+  switch(pNotification->P2P_Evt_Opcode)
+  {
+/* USER CODE BEGIN P2PS_STM_App_Notification_P2P_Evt_Opcode */
+#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
+    case P2PS_STM_BOOT_REQUEST_EVT:
+      APP_DBG_MSG("-- P2P APPLICATION SERVER : BOOT REQUESTED\n");
+      APP_DBG_MSG(" \n\r");
+
+      *(uint32_t*)SRAM1_BASE = *(uint32_t*)pNotification->DataTransfered.pPayload;
+      NVIC_SystemReset();
+      break;
+#endif
+/* USER CODE END P2PS_STM_App_Notification_P2P_Evt_Opcode */
+
+    case P2PS_STM__NOTIFY_ENABLED_EVT:
+/* USER CODE BEGIN P2PS_STM__NOTIFY_ENABLED_EVT */
+      P2P_Server_App_Context.Notification_Status = 1;
+      APP_DBG_MSG("-- P2P APPLICATION SERVER : NOTIFICATION ENABLED\n"); 
+      APP_DBG_MSG(" \n\r");
+/* USER CODE END P2PS_STM__NOTIFY_ENABLED_EVT */
+      break;
+
+    case P2PS_STM_NOTIFY_DISABLED_EVT:
+/* USER CODE BEGIN P2PS_STM_NOTIFY_DISABLED_EVT */
+      P2P_Server_App_Context.Notification_Status = 0;
+      APP_DBG_MSG("-- P2P APPLICATION SERVER : NOTIFICATION DISABLED\n");
+      APP_DBG_MSG(" \n\r");
+/* USER CODE END P2PS_STM_NOTIFY_DISABLED_EVT */
+      break;
+
+    case P2PS_STM_WRITE_EVT:
+/* USER CODE BEGIN P2PS_STM_WRITE_EVT */
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    	uint8_t *raw = pNotification->DataTransfered.pPayload;
+    	uint8_t len  = pNotification->DataTransfered.Length;
+
+    	if(raw[0] == 0xB0)   // ramka temperatury + ciśnienia
+    	{
+    	    temp = raw[1];
+
+    	    pressure  = raw[2];
+    	    pressure |= raw[3] << 8;
+    	    pressure |= raw[4] << 16;
+    	    pressure |= raw[5] << 24;
+
+    	    APP_DBG_MSG("TEMP=%d, PRESS=%lu\n", temp, pressure);
+    	    return;
+    	}
+
+
+//    	APP_DBG_MSG("RAW (%d bytes): ", len);
+//    	for(uint8_t i = 0; i < len; i++)
+//    	{
+//    	    APP_DBG_MSG("0x%02X ", raw[i]);
+//    	}
+//    	APP_DBG_MSG("\n");
+//
+//    	if(len < 2)
+//    	{
+//    	    APP_DBG_MSG("FRAME TOO SHORT\n");
+//    	    return;
+//    	}
+//
+//    	// -------------------------
+//    	// ODBIÓR TEMPERATURY
+//    	// -------------------------
+//    	temp = raw[1];
+//
+//    	// -------------------------
+//    	// ODBIÓR CIŚNIENIA (4 bajty)
+//    	// -------------------------
+//    	uint32_t press = 0;
+//
+//    	if(len >= 6)
+//    	{
+//    	    press  = ((uint32_t)raw[2] << 0);
+//    	    press |= ((uint32_t)raw[3] << 8);
+//    	    press |= ((uint32_t)raw[4] << 16);
+//    	    press |= ((uint32_t)raw[5] << 24);
+//    	}
+//    	else
+//    	{
+//    	    APP_DBG_MSG("NO PRESSURE DATA\n");
+//    	}
+//
+//    	pressure = press;
+//
+//    	APP_DBG_MSG(">> RX | TEMP=%d C, PRESS=%lu Pa\r\n", temp, pressure);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//
+//
+//
+//
+//      if(pNotification->DataTransfered.pPayload[0] == 0x00){ /* ALL Deviceselected - may be necessary as LB Routeur informs all connection */
+//        if(pNotification->DataTransfered.pPayload[1] == 0x01)
+//        {
+//          BSP_LED_On(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER  : LED1 ON\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x01; /* LED1 ON */
+//        }
+//        if(pNotification->DataTransfered.pPayload[1] == 0x00)
+//        {
+//          BSP_LED_Off(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER  : LED1 OFF\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x00; /* LED1 OFF */
+//        }
+//      }
+//#if(P2P_SERVER1 != 0)
+//      if(pNotification->DataTransfered.pPayload[0] == 0x01){ /* end device 1 selected - may be necessary as LB Routeur informs all connection */
+//        if(pNotification->DataTransfered.pPayload[1] == 0x01)
+//        {
+//          BSP_LED_On(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 1 : LED1 ON\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x01; /* LED1 ON */
+//        }
+//        if(pNotification->DataTransfered.pPayload[1] == 0x00)
+//        {
+//          BSP_LED_Off(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 1 : LED1 OFF\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x00; /* LED1 OFF */
+//        }
+//      }
+//#endif
+//#if(P2P_SERVER2 != 0)
+//      if(pNotification->DataTransfered.pPayload[0] == 0x02){ /* end device 2 selected */
+//        if(pNotification->DataTransfered.pPayload[1] == 0x01)
+//        {
+//          BSP_LED_On(LED_BLUE);
+//           APP_DBG_MSG("-- P2P APPLICATION SERVER 2 : LED1 ON\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x01; /* LED1 ON */
+//        }
+//        if(pNotification->DataTransfered.pPayload[1] == 0x00)
+//        {
+//          BSP_LED_Off(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 2 : LED1 OFF\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x00; /* LED1 OFF */
+//        }
+//      }
+//#endif
+//#if(P2P_SERVER3 != 0)
+//      if(pNotification->DataTransfered.pPayload[0] == 0x03){ /* end device 3 selected - may be necessary as LB Routeur informs all connection */
+//        if(pNotification->DataTransfered.pPayload[1] == 0x01)
+//        {
+//          BSP_LED_On(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 3 : LED1 ON\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x01; /* LED1 ON */
+//        }
+//        if(pNotification->DataTransfered.pPayload[1] == 0x00)
+//        {
+//          BSP_LED_Off(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 3 : LED1 OFF\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x00; /* LED1 OFF */
+//        }
+//      }
+//#endif
+//#if(P2P_SERVER4 != 0)
+//      if(pNotification->DataTransfered.pPayload[0] == 0x04){ /* end device 4 selected */
+//        if(pNotification->DataTransfered.pPayload[1] == 0x01)
+//        {
+//          BSP_LED_On(LED_BLUE);
+//           APP_DBG_MSG("-- P2P APPLICATION SERVER 2 : LED1 ON\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x01; /* LED1 ON */
+//        }
+//        if(pNotification->DataTransfered.pPayload[1] == 0x00)
+//        {
+//          BSP_LED_Off(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 2 : LED1 OFF\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x00; /* LED1 OFF */
+//        }
+//      }
+//#endif
+//#if(P2P_SERVER5 != 0)
+//      if(pNotification->DataTransfered.pPayload[0] == 0x05){ /* end device 5 selected - may be necessary as LB Routeur informs all connection */
+//        if(pNotification->DataTransfered.pPayload[1] == 0x01)
+//        {
+//          BSP_LED_On(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 5 : LED1 ON\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x01; /* LED1 ON */
+//        }
+//        if(pNotification->DataTransfered.pPayload[1] == 0x00)
+//        {
+//          BSP_LED_Off(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 5 : LED1 OFF\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x00; /* LED1 OFF */
+//        }
+//      }
+//#endif
+//#if(P2P_SERVER6 != 0)
+//      if(pNotification->DataTransfered.pPayload[0] == 0x06){ /* end device 6 selected */
+//        if(pNotification->DataTransfered.pPayload[1] == 0x01)
+//        {
+//          BSP_LED_On(LED_BLUE);
+//           APP_DBG_MSG("-- P2P APPLICATION SERVER 6 : LED1 ON\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x01; /* LED1 ON */
+//        }
+//        if(pNotification->DataTransfered.pPayload[1] == 0x00)
+//        {
+//          BSP_LED_Off(LED_BLUE);
+//          APP_DBG_MSG("-- P2P APPLICATION SERVER 6 : LED1 OFF\n");
+//          APP_DBG_MSG(" \n\r");
+//          P2P_Server_App_Context.LedControl.Led1=0x00; /* LED1 OFF */
+//        }
+//      }
+//#endif
+/* USER CODE END P2PS_STM_WRITE_EVT */
+      break;
+
+    default:
+/* USER CODE BEGIN P2PS_STM_App_Notification_default */
+      
+/* USER CODE END P2PS_STM_App_Notification_default */
+      break;
+  }
+/* USER CODE BEGIN P2PS_STM_App_Notification_2 */
+
+/* USER CODE END P2PS_STM_App_Notification_2 */
+  return;
+}
+
+void P2PS_APP_Notification(P2PS_APP_ConnHandle_Not_evt_t *pNotification)
+{
+/* USER CODE BEGIN P2PS_APP_Notification_1 */
+
+/* USER CODE END P2PS_APP_Notification_1 */
+  switch(pNotification->P2P_Evt_Opcode)
+  {
+/* USER CODE BEGIN P2PS_APP_Notification_P2P_Evt_Opcode */
+
+/* USER CODE END P2PS_APP_Notification_P2P_Evt_Opcode */
+  case PEER_CONN_HANDLE_EVT :
+/* USER CODE BEGIN PEER_CONN_HANDLE_EVT */
+          
+/* USER CODE END PEER_CONN_HANDLE_EVT */
+    break;
+
+    case PEER_DISCON_HANDLE_EVT :
+/* USER CODE BEGIN PEER_DISCON_HANDLE_EVT */
+       P2PS_APP_LED_BUTTON_context_Init();       
+/* USER CODE END PEER_DISCON_HANDLE_EVT */
+    break;
+
+    default:
+/* USER CODE BEGIN P2PS_APP_Notification_default */
+
+/* USER CODE END P2PS_APP_Notification_default */
+      break;
+  }
+/* USER CODE BEGIN P2PS_APP_Notification_2 */
+
+/* USER CODE END P2PS_APP_Notification_2 */
+  return;
+}
+
+void P2PS_APP_Init(void)
+{
+/* USER CODE BEGIN P2PS_APP_Init */
+  UTIL_SEQ_RegTask( 1<< CFG_TASK_SW1_BUTTON_PUSHED_ID, UTIL_SEQ_RFU, P2PS_Send_Notification );
+
+  /**
+   * Initialize LedButton Service
+   */
+  P2P_Server_App_Context.Notification_Status=0; 
+  P2PS_APP_LED_BUTTON_context_Init();
+/* USER CODE END P2PS_APP_Init */
+  return;
+}
+
+/* USER CODE BEGIN FD */
+void P2PS_APP_LED_BUTTON_context_Init(void){
+  
+  BSP_LED_Off(LED_BLUE);
+  APP_DBG_MSG("LED BLUE OFF\n");
+  
+  #if(P2P_SERVER1 != 0)
+  P2P_Server_App_Context.LedControl.Device_Led_Selection=0x01; /* Device1 */
+  P2P_Server_App_Context.LedControl.Led1=0x00; /* led OFF */
+  P2P_Server_App_Context.ButtonControl.Device_Button_Selection=0x01;/* Device1 */
+  P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
+#endif
+#if(P2P_SERVER2 != 0)
+  P2P_Server_App_Context.LedControl.Device_Led_Selection=0x02; /* Device2 */
+  P2P_Server_App_Context.LedControl.Led1=0x00; /* led OFF */
+  P2P_Server_App_Context.ButtonControl.Device_Button_Selection=0x02;/* Device2 */
+  P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
+#endif  
+#if(P2P_SERVER3 != 0)
+  P2P_Server_App_Context.LedControl.Device_Led_Selection=0x03; /* Device3 */
+  P2P_Server_App_Context.LedControl.Led1=0x00; /* led OFF */
+  P2P_Server_App_Context.ButtonControl.Device_Button_Selection=0x03; /* Device3 */
+  P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
+#endif
+#if(P2P_SERVER4 != 0)
+  P2P_Server_App_Context.LedControl.Device_Led_Selection=0x04; /* Device4 */
+  P2P_Server_App_Context.LedControl.Led1=0x00; /* led OFF */
+  P2P_Server_App_Context.ButtonControl.Device_Button_Selection=0x04; /* Device4 */
+  P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
+#endif  
+ #if(P2P_SERVER5 != 0)
+  P2P_Server_App_Context.LedControl.Device_Led_Selection=0x05; /* Device5 */
+  P2P_Server_App_Context.LedControl.Led1=0x00; /* led OFF */
+  P2P_Server_App_Context.ButtonControl.Device_Button_Selection=0x05; /* Device5 */
+  P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
+#endif
+#if(P2P_SERVER6 != 0)
+  P2P_Server_App_Context.LedControl.Device_Led_Selection=0x06; /* device6 */
+  P2P_Server_App_Context.LedControl.Led1=0x00; /* led OFF */
+  P2P_Server_App_Context.ButtonControl.Device_Button_Selection=0x06; /* Device6 */
+  P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
+#endif  
+}
+
+void P2PS_APP_SW1_Button_Action(void)
+{
+  UTIL_SEQ_SetTask( 1<<CFG_TASK_SW1_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
+
+  return;
+}
+/* USER CODE END FD */
+
+/*************************************************************
+ *
+ * LOCAL FUNCTIONS
+ *
+ *************************************************************/
+/* USER CODE BEGIN FD_LOCAL_FUNCTIONS*/
+void P2PS_Send_Notification(void)
+{
+ 
+  if(P2P_Server_App_Context.ButtonControl.ButtonStatus == 0x00){
+    P2P_Server_App_Context.ButtonControl.ButtonStatus=0x01;
+  } else {
+    P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
+  }
+  
+   if(P2P_Server_App_Context.Notification_Status){ 
+    APP_DBG_MSG("-- P2P APPLICATION SERVER  : INFORM CLIENT BUTTON 1 PUSHED \n ");
+    APP_DBG_MSG(" \n\r");
+    P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&P2P_Server_App_Context.ButtonControl);
+   } else {
+    APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT -  NOTIFICATION DISABLED\n "); 
+   }
+
+  return;
+}
+
+/* USER CODE END FD_LOCAL_FUNCTIONS*/
+````
+
+**p2p_stm.c**:
+````c
+/**
+  ******************************************************************************
+  * @file    p2p_stm.c
+  * @author  MCD Application Team
+  * @brief   Peer to Peer Service (Custom STM)
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2018-2021 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+
+
+/* Includes ------------------------------------------------------------------*/
+#include "common_blesvc.h"
+
+/* Private typedef -----------------------------------------------------------*/
+typedef struct{
+  uint16_t	PeerToPeerSvcHdle;				        /**< Service handle */
+  uint16_t	P2PWriteClientToServerCharHdle;	  /**< Characteristic handle */
+  uint16_t	P2PNotifyServerToClientCharHdle;	/**< Characteristic handle */
+#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
+  uint16_t  RebootReqCharHdle;                /**< Characteristic handle */
+#endif
+}PeerToPeerContext_t;
+
+/* Private defines -----------------------------------------------------------*/
+#define UUID_128_SUPPORTED  1
+
+#if (UUID_128_SUPPORTED == 1)
+#define BM_UUID_LENGTH  UUID_TYPE_128
+#else
+#define BM_UUID_LENGTH  UUID_TYPE_16
+#endif
+
+#define BM_REQ_CHAR_SIZE    (3)
+
+
+/* Private macros ------------------------------------------------------------*/
+
+/* Private variables ---------------------------------------------------------*/
+/**
+ * Reboot Characteristic UUID
+ * 0000fe11-8e22-4541-9d4c-21edae82ed19
+ */
+#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
+#if (UUID_128_SUPPORTED == 1)
+static const uint8_t BM_REQ_CHAR_UUID[16] = {0x19, 0xed, 0x82, 0xae,
+                                       0xed, 0x21, 0x4c, 0x9d,
+                                       0x41, 0x45, 0x22, 0x8e,
+                                       0x11, 0xFE, 0x00, 0x00};
+#else
+static const uint8_t BM_REQ_CHAR_UUID[2] = {0x11, 0xFE};
+#endif
+#endif
+
+/**
+ * START of Section BLE_DRIVER_CONTEXT
+ */
+PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static PeerToPeerContext_t aPeerToPeerContext;
+
+/**
+ * END of Section BLE_DRIVER_CONTEXT
+ */
+/* Private function prototypes -----------------------------------------------*/
+static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event);
+
+
+/* Functions Definition ------------------------------------------------------*/
+/* Private functions ----------------------------------------------------------*/
+
+#define COPY_UUID_128(uuid_struct, uuid_15, uuid_14, uuid_13, uuid_12, uuid_11, uuid_10, uuid_9, uuid_8, uuid_7, uuid_6, uuid_5, uuid_4, uuid_3, uuid_2, uuid_1, uuid_0) \
+do {\
+    uuid_struct[0] = uuid_0; uuid_struct[1] = uuid_1; uuid_struct[2] = uuid_2; uuid_struct[3] = uuid_3; \
+        uuid_struct[4] = uuid_4; uuid_struct[5] = uuid_5; uuid_struct[6] = uuid_6; uuid_struct[7] = uuid_7; \
+            uuid_struct[8] = uuid_8; uuid_struct[9] = uuid_9; uuid_struct[10] = uuid_10; uuid_struct[11] = uuid_11; \
+                uuid_struct[12] = uuid_12; uuid_struct[13] = uuid_13; uuid_struct[14] = uuid_14; uuid_struct[15] = uuid_15; \
+}while(0)
+
+/* Hardware Characteristics Service */
+/*
+ The following 128bits UUIDs have been generated from the random UUID
+ generator:
+ D973F2E0-B19E-11E2-9E96-0800200C9A66: Service 128bits UUID
+ D973F2E1-B19E-11E2-9E96-0800200C9A66: Characteristic_1 128bits UUID
+ D973F2E2-B19E-11E2-9E96-0800200C9A66: Characteristic_2 128bits UUID
+ */
+#define COPY_P2P_SERVICE_UUID(uuid_struct)       COPY_UUID_128(uuid_struct,0x00,0x00,0xfe,0x40,0xcc,0x7a,0x48,0x2a,0x98,0x4a,0x7f,0x2e,0xd5,0xb3,0xe5,0x8f)
+#define COPY_P2P_WRITE_CHAR_UUID(uuid_struct)    COPY_UUID_128(uuid_struct,0x00,0x00,0xfe,0x41,0x8e,0x22,0x45,0x41,0x9d,0x4c,0x21,0xed,0xae,0x82,0xed,0x19)
+#define COPY_P2P_NOTIFY_UUID(uuid_struct)        COPY_UUID_128(uuid_struct,0x00,0x00,0xfe,0x42,0x8e,0x22,0x45,0x41,0x9d,0x4c,0x21,0xed,0xae,0x82,0xed,0x19)
+
+
+
+/**
+ * @brief  Event handler
+ * @param  Event: Address of the buffer holding the Event
+ * @retval Ack: Return whether the Event has been managed or not
+ */
+static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
+{
+  SVCCTL_EvtAckStatus_t return_value;
+  hci_event_pckt *event_pckt;
+  evt_blecore_aci *blecore_evt;
+  aci_gatt_attribute_modified_event_rp0    * attribute_modified;
+  P2PS_STM_App_Notification_evt_t Notification;
+
+  return_value = SVCCTL_EvtNotAck;
+  event_pckt = (hci_event_pckt *)(((hci_uart_pckt*)Event)->data);
+
+  switch(event_pckt->evt)
+  {
+    case HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE:
+    {
+      blecore_evt = (evt_blecore_aci*)event_pckt->data;
+      switch(blecore_evt->ecode)
+      {
+        case ACI_GATT_ATTRIBUTE_MODIFIED_VSEVT_CODE:
+       {
+          attribute_modified = (aci_gatt_attribute_modified_event_rp0*)blecore_evt->data;
+            if(attribute_modified->Attr_Handle == (aPeerToPeerContext.P2PNotifyServerToClientCharHdle + 2))
+            {
+              /**
+               * Descriptor handle
+               */
+              return_value = SVCCTL_EvtAckFlowEnable;
+              /**
+               * Notify to application
+               */
+              if(attribute_modified->Attr_Data[0] & COMSVC_Notification)
+              {
+                Notification.P2P_Evt_Opcode = P2PS_STM__NOTIFY_ENABLED_EVT;
+                P2PS_STM_App_Notification(&Notification);
+              }
+              else
+              {
+                Notification.P2P_Evt_Opcode = P2PS_STM_NOTIFY_DISABLED_EVT;
+                P2PS_STM_App_Notification(&Notification);
+              }
+            }
+            
+            else if(attribute_modified->Attr_Handle == (aPeerToPeerContext.P2PWriteClientToServerCharHdle + 1))
+            {
+              BLE_DBG_P2P_STM_MSG("-- GATT : LED CONFIGURATION RECEIVED\n");
+              Notification.P2P_Evt_Opcode = P2PS_STM_WRITE_EVT;
+              Notification.DataTransfered.Length=attribute_modified->Attr_Data_Length;
+              Notification.DataTransfered.pPayload=attribute_modified->Attr_Data;
+              P2PS_STM_App_Notification(&Notification);  
+            }
+#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
+            else if(attribute_modified->Attr_Handle == (aPeerToPeerContext.RebootReqCharHdle + 1))
+            {
+              BLE_DBG_P2P_STM_MSG("-- GATT : REBOOT REQUEST RECEIVED\n");
+              Notification.P2P_Evt_Opcode = P2PS_STM_BOOT_REQUEST_EVT;
+              Notification.DataTransfered.Length=attribute_modified->Attr_Data_Length;
+              Notification.DataTransfered.pPayload=attribute_modified->Attr_Data;
+              P2PS_STM_App_Notification(&Notification);
+            }
+#endif
+        }
+        break;
+
+        default:
+          break;
+      }
+    }
+    break; /* HCI_HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE_SPECIFIC */
+
+    default:
+      break;
+  }
+
+  return(return_value);
+}/* end SVCCTL_EvtAckStatus_t */
+
+
+/* Public functions ----------------------------------------------------------*/
+
+/**
+ * @brief  Service initialization
+ * @param  None
+ * @retval None
+ */
+void P2PS_STM_Init(void)
+{
+ 
+  Char_UUID_t  uuid16;
+
+  /**
+   *	Register the event handler to the BLE controller
+   */
+  SVCCTL_RegisterSvcHandler(PeerToPeer_Event_Handler);
+  
+    /**
+     *  Peer To Peer Service
+     *
+     * Max_Attribute_Records = 2*no_of_char + 1
+     * service_max_attribute_record = 1 for Peer To Peer service +
+     *                                2 for P2P Write characteristic +
+     *                                2 for P2P Notify characteristic +
+     *                                1 for client char configuration descriptor +
+     *                                
+     */
+    COPY_P2P_SERVICE_UUID(uuid16.Char_UUID_128);
+    aci_gatt_add_service(UUID_TYPE_128,
+                      (Service_UUID_t *) &uuid16,
+                      PRIMARY_SERVICE,
+#if (BLE_CFG_OTA_REBOOT_CHAR != 0)
+                      2+
+#endif                      
+                      6,
+                      &(aPeerToPeerContext.PeerToPeerSvcHdle));
+
+    /**
+     *  Add LED Characteristic
+     */
+    COPY_P2P_WRITE_CHAR_UUID(uuid16.Char_UUID_128);
+    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+                      UUID_TYPE_128, &uuid16,
+                      6,
+                      CHAR_PROP_WRITE_WITHOUT_RESP|CHAR_PROP_READ,
+                      ATTR_PERMISSION_NONE,
+                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+                      10, /* encryKeySize */
+                      1, /* isVariable */
+                      &(aPeerToPeerContext.P2PWriteClientToServerCharHdle));
+
+    /**
+     *   Add Button Characteristic
+     */
+    COPY_P2P_NOTIFY_UUID(uuid16.Char_UUID_128);
+    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+                      UUID_TYPE_128, &uuid16,
+                      6,
+                      CHAR_PROP_NOTIFY,
+                      ATTR_PERMISSION_NONE,
+                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+                      10, /* encryKeySize */
+                      1, /* isVariable: 1 */
+                      &(aPeerToPeerContext.P2PNotifyServerToClientCharHdle));
+ 
+#if(BLE_CFG_OTA_REBOOT_CHAR != 0)      
+    /**
+     *  Add Boot Request Characteristic
+     */
+    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+                      BM_UUID_LENGTH,
+                      (Char_UUID_t *)BM_REQ_CHAR_UUID,
+                      BM_REQ_CHAR_SIZE,
+                      CHAR_PROP_WRITE_WITHOUT_RESP,
+                      ATTR_PERMISSION_NONE,
+                      GATT_NOTIFY_ATTRIBUTE_WRITE,
+                      10,
+                      0,
+                      &(aPeerToPeerContext.RebootReqCharHdle));
+#endif    
+
+    
+  return;
+}
+
+/**
+ * @brief  Characteristic update
+ * @param  UUID: UUID of the characteristic
+ * @param  Service_Instance: Instance of the service to which the characteristic belongs
+ * 
+ */
+tBleStatus P2PS_STM_App_Update_Char(uint16_t UUID, uint8_t *pPayload) 
+{
+  tBleStatus result = BLE_STATUS_INVALID_PARAMS;
+  switch(UUID)
+  {
+    case P2P_NOTIFY_CHAR_UUID:
+      
+     result = aci_gatt_update_char_value(aPeerToPeerContext.PeerToPeerSvcHdle,
+                             aPeerToPeerContext.P2PNotifyServerToClientCharHdle,
+                              0, /* charValOffset */
+                             2, /* charValueLen */
+                             (uint8_t *)  pPayload);
+    
+      break;
+
+    default:
+      break;
+  }
+
+  return result;
+}/* end P2PS_STM_Init() */
+
+
+````
 
 
 
