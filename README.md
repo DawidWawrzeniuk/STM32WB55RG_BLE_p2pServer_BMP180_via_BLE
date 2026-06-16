@@ -29,7 +29,7 @@ The codebase is divided into several functional modules described below.**
 <img width="301" height="521" alt="image" src="https://github.com/user-attachments/assets/14047ba0-0abe-4f75-8842-fe0846264eb4" />
 </p>
 
-Example of running:
+**Example of running:**
 <p align="center">
 <img width="471" height="502" alt="image" src="https://github.com/user-attachments/assets/da37a0f9-df5b-496f-a0d3-334e54c8aeaa" />
 <img width="399" height="419" alt="image" src="https://github.com/user-attachments/assets/cc577764-7091-4b0c-80fd-5be76122bd2e" />
