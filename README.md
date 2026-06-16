@@ -1067,6 +1067,12 @@ RTC_HandleTypeDef hrtc;
 volatile uint16_t timer_1s;
 extern uint8_t temp;
 extern uint32_t pressure;
+
+
+uint8_t screen = 0;
+uint8_t last_state = 0;
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1179,6 +1185,48 @@ int main(void)
 	  HAL_RTC_GetTime(&hrtc, &rtcTime, RTC_FORMAT_BIN);
 	  HAL_RTC_GetDate(&hrtc, &rtcDate, RTC_FORMAT_BIN);
 
+
+
+
+
+
+
+
+
+
+
+	  uint8_t pin = HAL_GPIO_ReadPin(next_screen_GPIO_Port, next_screen_Pin);
+
+	  if (pin == GPIO_PIN_SET && last_state == GPIO_PIN_RESET)
+	  {
+		  screen++;
+		  if (screen > 3)
+		  {
+		      screen = 0;
+		  }
+	  }
+
+	  last_state = pin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	      if(!timer_1s)
 	      {
 	          timer_1s = 1000;
@@ -1188,39 +1236,92 @@ int main(void)
 	          loops = 0;
 	      }
 
+
+
+
+
+
+
+
+
+
 	      if(hi2c1.hdmatx->State == HAL_DMA_STATE_READY)
 	      {
 	          SSD1306_Clear(BLACK);
-	          // NAGŁÓWEK
 
-	          GFX_DrawString(2, 0, "Gothenburg", WHITE, BLACK);
+	          if (screen == 0)
+	          {
+	              // -------------------------
+	              // EKRAN 1 – Twój aktualny
+	              // -------------------------
+	              GFX_DrawLine(0, 0, 127, 0, WHITE);
+	              GFX_DrawLine(0, 63, 127, 63, WHITE);
+	              GFX_DrawLine(0, 0, 0, 63, WHITE);
+	              GFX_DrawLine(127, 0, 127, 63, WHITE);
 
-	          // GODZINA
-	          char txt_time[10];
-	          sprintf(txt_time, "%02d:%02d", rtcTime.Hours, rtcTime.Minutes);
-	          GFX_DrawString(70, 0, txt_time, WHITE, BLACK);
+	              GFX_DrawString(2, 3, "Gothenburg", WHITE, BLACK);
 
-	          GFX_DrawLine(0, 25, 127, 25, WHITE);
+	              char txt_time[10];
+	              sprintf(txt_time, "%02d:%02d", rtcTime.Hours, rtcTime.Minutes);
+	              GFX_DrawString(70, 3, txt_time, WHITE, BLACK);
 
-	          // DATA
-	          char txt_date[20];
-	          sprintf(txt_date, "%02d.%02d.%04d", rtcDate.Date, rtcDate.Month, 2000 + rtcDate.Year);
-	          GFX_DrawString(2, 15, txt_date, WHITE, BLACK);
+	              GFX_DrawLine(0, 25, 127, 25, WHITE);
 
-	          // TEMPERATURA
-	          char txt_temp[20];
-	          sprintf(txt_temp, "Temperature: %d C", temp);
-	          GFX_DrawString(2, 30, txt_temp, WHITE, BLACK);
+	              char txt_date[20];
+	              sprintf(txt_date, "%02d.%02d.%04d", rtcDate.Date, rtcDate.Month, 2000 + rtcDate.Year);
+	              GFX_DrawString(2, 15, txt_date, WHITE, BLACK);
 
-	          // CIŚNIENIE
-	          char txt_press[20];
-	          sprintf(txt_press, "Pressure: %lu hPa", pressure / 100);
+	              char txt_temp[20];
+	              sprintf(txt_temp, "Temperature: %d C", temp);
+	              GFX_DrawString(2, 30, txt_temp, WHITE, BLACK);
 
-	          GFX_DrawString(2, 45, txt_press, WHITE, BLACK);
+	              char txt_press[20];
+	              sprintf(txt_press, "Pressure: %lu hPa", pressure / 100);
+	              GFX_DrawString(2, 45, txt_press, WHITE, BLACK);
+	          }
+
+	          else if (screen == 1)
+	          {
+	              // -------------------------
+	              // EKRAN 2 – przykładowy
+	              // -------------------------
+	              GFX_DrawString(10, 10, "SECOND SCREEN", WHITE, BLACK);
+	              GFX_DrawLine(0, 20, 127, 20, WHITE);
+	              if(temp>=28)
+	              {
+	              GFX_DrawString(10, 30, "Actually sunny!", WHITE, BLACK);
+	              }
+	              else if(temp<28)
+	              GFX_DrawString(10, 30, "Actually cloudy!", WHITE, BLACK);
+	              GFX_DrawString(10, 45, "Press button to ", WHITE, BLACK);
+	              GFX_DrawString(10, 55, " exit second screen", WHITE, BLACK);
+	          }
+	          else if (screen == 2)
+	          {
+	              GFX_DrawString(10, 10, "THIRD SCREEN", WHITE, BLACK);
+	              GFX_DrawLine(0, 20, 127, 20, WHITE);
+
+	              char buf[30];
+	              GFX_DrawString(10, 30, "Uptime of", WHITE, BLACK);
+	              sprintf(buf, "measure: %lu s", HAL_GetTick() / 1000);
+	              GFX_DrawString(10, 45, buf, WHITE, BLACK);
+
+	              if (pressure > 101000)
+	                  GFX_DrawString(10, 55, "High pressure", WHITE, BLACK);
+	              else
+	                  GFX_DrawString(10, 55, "Normal pressure", WHITE, BLACK);
+	          }
+	          else if (screen == 3)
+	          {
+	          	  GFX_DrawString(10, 10, "FOUR SCREEN", WHITE, BLACK);
+	          	  GFX_DrawLine(0, 20, 127, 20, WHITE);
+
+
+	          	}
 
 	          SSD1306_Display();
-	          loops++;
-  			  	}
+	      }
+
   			    HAL_GPIO_WritePin(TEST_GPIO_Port, TEST_Pin, 0);
   			    loops++;
 
@@ -1234,10 +1335,10 @@ int main(void)
 
 
 
-      /* USER CODE END WHILE */
-      MX_APPE_Process();
+    /* USER CODE END WHILE */
+    MX_APPE_Process();
 
-      /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
     }
   /* USER CODE END 3 */
 }
@@ -1629,6 +1730,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(TEST_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : next_screen_Pin */
+  GPIO_InitStruct.Pin = next_screen_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(next_screen_GPIO_Port, &GPIO_InitStruct);
+
   /* USER CODE BEGIN MX_GPIO_Init_2 */
   /* USER CODE END MX_GPIO_Init_2 */
 }
@@ -1664,6 +1771,7 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
 ````
 ## 🖥 3. OLED Driver — OLED_SSD1306
 **The graphics engine relies on the SSD1306 driver for:**
