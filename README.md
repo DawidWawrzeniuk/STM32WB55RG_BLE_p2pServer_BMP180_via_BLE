@@ -29,6 +29,16 @@ The codebase is divided into several functional modules described below.**
 <img width="301" height="521" alt="image" src="https://github.com/user-attachments/assets/14047ba0-0abe-4f75-8842-fe0846264eb4" />
 </p>
 
+Example of running:
+<p align="center">
+<img width="471" height="502" alt="image" src="https://github.com/user-attachments/assets/da37a0f9-df5b-496f-a0d3-334e54c8aeaa" />
+<img width="399" height="419" alt="image" src="https://github.com/user-attachments/assets/cc577764-7091-4b0c-80fd-5be76122bd2e" />
+<img width="412" height="442" alt="image" src="https://github.com/user-attachments/assets/47362a41-da77-4b17-89cd-ff9de5bafc59" />
+<img width="436" height="455" alt="image" src="https://github.com/user-attachments/assets/fe4bf75b-e002-4a36-816f-3e008aeabe37" />
+</p>
+
+
+
 ## 🖼 1. Font System — font_8x5.h & fonts.h
 **font_8x5.h**
 This file defines a compact 8×5 bitmap font used for rendering text on the OLED.
