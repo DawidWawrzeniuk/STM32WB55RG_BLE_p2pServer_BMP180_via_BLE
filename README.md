@@ -3,16 +3,16 @@
 The codebase is divided into several functional modules described below.**
 
 ## System architecture
-+---------------------+         BLE         +----------------------+
-|  Sensor Node        | <-----------------> |  Display Node        |
-|  STM32WB55RG        |                     |  STM32WB55RG         |
-|                     |                     |                      |
-|  BMP180 Sensor      |                     |  Display (LCD/OLED) |
-|                     |                     |                      |
-|  - Reads temp       |                     |  - Receives data     |
-|  - Reads pressure   |                     |  - Decodes frame     |
-|  - Formats packet   |                     |  - Displays values   |
-+---------------------+                     +----------------------+
+| Component     | Sensor Node                  | Display Node              |
+| ------------- | ---------------------------- | ------------------------- |
+| MCU           | STM32WB55RG                  | STM32WB55RG               |
+| Role          | BLE Peripheral / GATT Server | BLE Central / GATT Client |
+| Sensor        | BMP180                       | —                         |
+| Input         | Temperature, Pressure        | BLE Data Frame            |
+| Processing    | Read sensor, build packet    | Decode packet             |
+| Output        | BLE Notification             | LCD/OLED Display          |
+| Communication | BLE                          | BLE                       |
+
 
 
 ## BLE Communication
@@ -42,7 +42,7 @@ Byte 4-5 → Reserved / future use (or checksum)
 * Sensor data acquisition from BMP180
 * Low latency point-to-point communication
 * Expandable frame format for future features
-* 
+
 ## System Behavior
 1. Sensor node periodically reads BMP180 data
 2. Data is converted to integer representation
