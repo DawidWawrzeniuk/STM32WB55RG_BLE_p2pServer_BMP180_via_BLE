@@ -61,7 +61,17 @@ Byte 6 -> Reserved / future use (or checksum)
 
 
 
+## Skills Demonstrated
 
+- STM32WB55 BLE Stack
+- BLE GATT Services
+- I2C Communication
+- BMP180 Sensor Integration
+- SSD1306 OLED Driver
+- Embedded C
+- DMA Configuration
+- Custom Binary Protocol Design
+- STM32CubeIDE
 
 
 
