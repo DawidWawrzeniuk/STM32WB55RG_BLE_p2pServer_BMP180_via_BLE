@@ -1,5 +1,5 @@
 # STM32WB55 BLE P2P Server — Temperature & Pressure Display
-**This project implements a BLE P2P Server on the STM32WB55 and displays temperature and pressure values on an SSD1306 OLED using a custom monochrome graphics engine.
+**STM32WB55 BLE Environmental Monitoring System (BMP180) - This project implements a dual-device embedded system based on STM32WB55 microcontrollers communicating over Bluetooth Low Energy (BLE). One device acts as a sensor node acquiring environmental data from a BMP180 pressure and temperature sensor, while the second device acts as a display node receiving and presenting the data. The system demonstrates BLE GATT server implementation, low-level sensor integration, and lightweight binary communication protocol design.
 The codebase is divided into several functional modules described below.**
 
 ## Configuration of pins:
