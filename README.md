@@ -14,6 +14,61 @@ The codebase is divided into several functional modules described below.**
 |  - Formats packet   |                     |  - Displays values   |
 +---------------------+                     +----------------------+
 
+
+## BLE Communication
+
+The system uses a custom BLE GATT characteristic (P2P Server model).
+
+* Role: STM32WB55 Peripheral (Sensor Node)
+* Role: STM32WB55 Central/Client (Display Node)
+* Transfer method: BLE Notifications
+
+## Data Protocol (Binary Frame)
+
+**The system uses a compact 6-byte binary frame:**
+````
+Byte 0   → Device ID
+Byte 1   → Temperature (°C, int8)
+Byte 2-5 → Pressure (hPa, uint16)
+Byte 4-5 → Reserved / future use (or checksum)
+````
+**Example decoding:**
+* Temperature: 25 → 25°C
+* Pressure: 1008 → 1008 hPa
+## Features
+* Real-time environmental monitoring
+* BLE wireless communication (STM32WB55 stack)
+* Custom lightweight binary protocol
+* Sensor data acquisition from BMP180
+* Low latency point-to-point communication
+* Expandable frame format for future features
+* 
+## System Behavior
+1. Sensor node periodically reads BMP180 data
+2. Data is converted to integer representation
+3. Data frame is built and sent via BLE notification
+4. Display node receives frame
+5. Frame is decoded and values are displayed
+6. Connection loss triggers automatic reconnect
+## Design Decisions
+* Fixed-point integer representation used instead of floating point for efficiency
+* BLE notifications used instead of polling for low latency
+* Minimal frame size (6 bytes) for efficiency
+* Separation of sensor logic and communication layer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Configuration of pins:
 <p align="center">
 <img width="611" height="642" alt="image" src="https://github.com/user-attachments/assets/38750f67-2b23-4be5-90aa-5b5470def4fd" />
