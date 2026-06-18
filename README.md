@@ -30,7 +30,7 @@ The system uses a custom BLE GATT characteristic (P2P Server model).
 Byte 0   → Device ID
 Byte 1   → Temperature (°C, int8)
 Byte 2-5 → Pressure (hPa, uint16)
-Byte 4-5 → Reserved / future use (or checksum)
+Byte 6 → Reserved / future use (or checksum)
 ````
 **Example decoding:**
 * Temperature: 25 → 25°C
