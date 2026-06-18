@@ -2,6 +2,18 @@
 **STM32WB55 BLE Environmental Monitoring System (BMP180) - This project implements a dual-device embedded system based on STM32WB55 microcontrollers communicating over Bluetooth Low Energy (BLE). One device acts as a sensor node acquiring environmental data from a BMP180 pressure and temperature sensor, while the second device acts as a display node receiving and presenting the data. The system demonstrates BLE GATT server implementation, low-level sensor integration, and lightweight binary communication protocol design.
 The codebase is divided into several functional modules described below.**
 
+## System architecture
+													+---------------------+         BLE         +----------------------+
+													|  Sensor Node        | <-----------------> |  Display Node        |
+													|  STM32WB55RG        |                     |  STM32WB55RG         |
+													|                     |                     |                      |
+													|  BMP180 Sensor      |                     |  Display (LCD/OLED) |
+													|                     |                     |                      |
+													|  - Reads temp       |                     |  - Receives data     |
+													|  - Reads pressure   |                     |  - Decodes frame     |
+													|  - Formats packet   |                     |  - Displays values   |
+													+---------------------+                     +----------------------+
+
 ## Configuration of pins:
 <p align="center">
 <img width="611" height="642" alt="image" src="https://github.com/user-attachments/assets/38750f67-2b23-4be5-90aa-5b5470def4fd" />
