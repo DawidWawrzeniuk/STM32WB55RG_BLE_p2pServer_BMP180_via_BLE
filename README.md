@@ -3,16 +3,16 @@
 The codebase is divided into several functional modules described below.**
 
 ## System architecture
-													+---------------------+         BLE         +----------------------+
-													|  Sensor Node        | <-----------------> |  Display Node        |
-													|  STM32WB55RG        |                     |  STM32WB55RG         |
-													|                     |                     |                      |
-													|  BMP180 Sensor      |                     |  Display (LCD/OLED) |
-													|                     |                     |                      |
-													|  - Reads temp       |                     |  - Receives data     |
-													|  - Reads pressure   |                     |  - Decodes frame     |
-													|  - Formats packet   |                     |  - Displays values   |
-													+---------------------+                     +----------------------+
++---------------------+         BLE         +----------------------+
+|  Sensor Node        | <-----------------> |  Display Node        |
+|  STM32WB55RG        |                     |  STM32WB55RG         |
+|                     |                     |                      |
+|  BMP180 Sensor      |                     |  Display (LCD/OLED) |
+|                     |                     |                      |
+|  - Reads temp       |                     |  - Receives data     |
+|  - Reads pressure   |                     |  - Decodes frame     |
+|  - Formats packet   |                     |  - Displays values   |
++---------------------+                     +----------------------+
 
 ## Configuration of pins:
 <p align="center">
